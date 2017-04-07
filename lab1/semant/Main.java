@@ -1,11 +1,16 @@
 package semant;
 
 import semant.whilesyntax.Stm;
+import semant.amsyntax.*;
 
 public class Main {
     public static void main(String[] args) throws Exception {
         Stm s = WhileParser.parse(args[0]);
-        s.accept(new PrettyPrinter());
+        Code y = s.accept(new CompileVisitor());
+        for (Inst i : y) {
+        	System.out.println(i);
+        }
+
         
         // TODO:
         // - Compile s into AM Code
