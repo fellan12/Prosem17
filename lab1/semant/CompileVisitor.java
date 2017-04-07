@@ -116,12 +116,10 @@ public class CompileVisitor implements WhileVisitor {
     }
     
     public Code visit(TryCatch trycatch) {
-        Code c = new Code();
         return null;
     }
     
     public Code visit(Divide div) {
-        Code c = new Code();
         return null;
     }
 }
