@@ -125,13 +125,22 @@ public class CompileVisitor implements WhileVisitor {
         return c;
     }
     
-    //TODO
     public Code visit(TryCatch trycatch) {
-        return null;
+        Code c = new Code();
+        c.addAll(trycatch.b.accept(this));
+        Code c1 = new Code();
+        c1.addAll(trycatch.s1.accept(this));
+        Code c2 = new Code();
+        c2.addAll(trycatch.s2.accept(this));
+        c.add(new TryC(c1,c2));
+        return c;
     }
-    
-    //TODO
+        
     public Code visit(Divide div) {
-        return null;
+        Code c = new Code();
+        c.addAll(div.a2.accept(this));
+        c.addAll(div.a1.accept(this));
+        c.add(new Divide());
+        return c;
     }
 }

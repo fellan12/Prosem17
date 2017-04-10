@@ -53,6 +53,13 @@ class Configuration {
 	}
 
 	/*
+	*
+	*/
+	public State getState(){
+		return s;
+	}
+
+	/*
 	* Get the top instruction in the code list
 	*/
 	public Inst peekInst(){

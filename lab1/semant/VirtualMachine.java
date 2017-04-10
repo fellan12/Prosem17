@@ -165,6 +165,32 @@ class VirtualMachine {
 					eo = new EvalObj(true);
 					conf.addEval(eo);
 					break;
+
+				case DIV:
+					//consume
+					conf.getInst();
+					// Get lhs
+					a1 = conf.getEval().getInt();
+					// Get rhs
+					a2 = conf.getEval().getInt();
+					if(a2 != 0){
+						eo = new EvalObj(a1/a2);
+						conf.addEval(eo);
+					}else{
+						conf.getState().setExceptionalState(true);
+					}
+					break;
+
+				case TRYC:
+					TryC tc = (TryC) conf.getInst();
+					Code c1 = tc.c1;
+					Catch cat = new Catch(tc.c2);
+					c1.add(cat);
+					conf.addCode(c1);
+					break;
+					
+				case CATCH:
+				//TODO
 			}
 		}
 		
