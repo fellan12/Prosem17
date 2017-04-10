@@ -5,7 +5,7 @@ public class TryC extends Inst {
 	public final Code c2;
 
     public TryC(Code c1, Code c2) {
-        super(Opcode.TRYCATCH);
+        super(Opcode.TRYC);
         this.c1 = c1;
         this.c2 = c2;
     }

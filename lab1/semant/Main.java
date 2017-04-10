@@ -2,15 +2,24 @@ package semant;
 
 import semant.whilesyntax.Stm;
 import semant.amsyntax.*;
+import java.util.*;
 
 public class Main {
-	private static void pressKeyToContinue(){ 
-		System.out.println("Press any key to continue...");
+	public static final String ANSI_GREEN = "\u001B[32m";
+	public static final String ANSI_RESET = "\u001B[0m";
+
+	private static boolean pressKeyToContinue(){ 
+
+		System.out.println(ANSI_GREEN+ "Press enter key to continue or write 'skip' to go to the end" + ANSI_RESET);
 		try{
-			System.in.read();
+			Scanner sc = new Scanner(System.in);
+			if(sc.nextLine().equals("skip")){
+				return false;
+			}
 		}  
 		catch(Exception e){
 		}  
+		return true;
 	}
 	
 	public static void main(String[] args) throws Exception {
@@ -20,9 +29,12 @@ public class Main {
 		
 		Configuration conf = new Configuration(y);
 		VirtualMachine VM = new VirtualMachine();
+		boolean steps = true;
 		while(conf.hasNext()){
 			conf.printConfig();
-			pressKeyToContinue();
+			if(steps){
+				steps = pressKeyToContinue();
+			}
 			conf = VM.step(conf);
 		}
 		conf.printConfig();
