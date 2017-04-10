@@ -8,8 +8,8 @@ import java.util.*;
 
 class Configuration {
 	private Code c = new Code();
-	private Stack e = new Stack();
-	private ArrayList s = new ArrayList();
+	private Stack<EvalObj> e = new Stack<EvalObj>();
+	private HashMap<String,Integer> s = new HashMap<String,Integer>();
 	private int stepCount = 1;
 	private boolean complete = false;
 
@@ -39,6 +39,9 @@ class Configuration {
 	public Code getCode(){
 		return c;
 	}
+	public void addCode(Code cd){
+		c.addAll(0,cd);
+	}
 
 	/*
 	* Get the top instruction in the code list
@@ -50,17 +53,32 @@ class Configuration {
 	}
 
 	/*
+	* Get the top instruction in the code list
+	*/
+	public Inst peekInst(){
+		return c.get(0);
+	}
+
+	/*
 	* Get the evaluation stack
 	*/
-	public Stack getEval(){
-		return e;
+	public EvalObj getEval(){
+		return e.pop();
+	}
+
+	public void addEval(EvalObj x){
+		e.push(x);
 	}
 
 	/*
 	* Get the storage list
 	*/
-	public ArrayList getStorage(){
+	public HashMap<String,Integer> getStorage(){
 		return s;
+	}
+
+	public void addStorage(String x, int n) {
+		s.put(x,n);
 	}
 
 	/*
@@ -78,6 +96,9 @@ class Configuration {
 		String codeString = "ε";
 		String evalString = "ε";
 		String storageString = "ε";
+	
+		System.out.println("Step: " + stepCount +"\n");
+
 		if(!c.isEmpty()){
 			codeString = "";
 			for (Inst i : c) {
@@ -85,11 +106,23 @@ class Configuration {
 			}
 			codeString = codeString.substring(0, codeString.length()-1);
 		}
-		System.out.println("Step: " + stepCount +"\n");
 
 		if(!e.isEmpty()){
-			evalString = e.toString().replaceAll("\\[", "").replaceAll("]", "");
+			evalString = "";
+			for (EvalObj eo: e) {
+				evalString = eo.printObj() + ":" + evalString;
+			}
+			evalString = evalString.substring(0, evalString.length()-1);			
 		}
+
+		if(!s.isEmpty()){
+			storageString = "";
+			for (String key : s.keySet()) {
+				storageString += key + "=" + s.get(key) +":";
+			}
+			storageString = storageString.substring(0, storageString.length()-1);			
+		}
+
 		if(c.isEmpty()){
 			System.out.println("Code: " + codeString + " (Empty)\n");
 		}else{

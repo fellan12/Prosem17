@@ -21,8 +21,8 @@ public class CompileVisitor implements WhileVisitor {
     
     public Code visit(Conjunction and) {
         Code c = new Code();
-        c.addAll(and.b1.accept(this));
         c.addAll(and.b2.accept(this));
+        c.addAll(and.b1.accept(this));
         c.add(new And());
         return c;
     }
@@ -47,8 +47,8 @@ public class CompileVisitor implements WhileVisitor {
     
     public Code visit(Equals equals) {
         Code c = new Code();
-        c.addAll(equals.a1.accept(this));
         c.addAll(equals.a2.accept(this));
+        c.addAll(equals.a1.accept(this));
         c.add(new Eq());
         return c;
     }
@@ -61,16 +61,16 @@ public class CompileVisitor implements WhileVisitor {
 
     public Code visit(LessThanEq lessthaneq) {
         Code c = new Code();
-        c.addAll(lessthaneq.a1.accept(this));
         c.addAll(lessthaneq.a2.accept(this));
+        c.addAll(lessthaneq.a1.accept(this));
         c.add(new Le());
         return c;
     }
 
     public Code visit(Minus minus) {
         Code c = new Code();
-        c.addAll(minus.a1.accept(this));
         c.addAll(minus.a2.accept(this));
+        c.addAll(minus.a1.accept(this));
         c.add(new Sub());
         return c;
     }
@@ -83,8 +83,8 @@ public class CompileVisitor implements WhileVisitor {
     
     public Code visit(Plus plus) {
         Code c = new Code();
-        c.addAll(plus.a1.accept(this));
         c.addAll(plus.a2.accept(this));
+        c.addAll(plus.a1.accept(this));
         c.add(new Add());
         return c;
     }
@@ -97,8 +97,8 @@ public class CompileVisitor implements WhileVisitor {
 
     public Code visit(Times times) {
         Code c = new Code();
-        c.addAll(times.a1.accept(this));
         c.addAll(times.a2.accept(this));
+        c.addAll(times.a1.accept(this));
         c.add(new Mult());
         return c;
     }
