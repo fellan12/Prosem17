@@ -9,7 +9,7 @@ import java.util.*;
 class Configuration {
 	private Code c = new Code();
 	private Stack<EvalObj> e = new Stack<EvalObj>();
-	private HashMap<String,Integer> s = new HashMap<String,Integer>();
+	private State s = new State();
 	private int stepCount = 1;
 	private boolean complete = false;
 
@@ -74,11 +74,11 @@ class Configuration {
 	* Get the storage list
 	*/
 	public HashMap<String,Integer> getStorage(){
-		return s;
+		return s.getMappings();
 	}
 
 	public void addStorage(String x, int n) {
-		s.put(x,n);
+		s.getMappings().put(x,n);
 	}
 
 	/*
@@ -115,10 +115,10 @@ class Configuration {
 			evalString = evalString.substring(0, evalString.length()-1);			
 		}
 
-		if(!s.isEmpty()){
+		if(!s.getMappings().isEmpty()){
 			storageString = "";
-			for (String key : s.keySet()) {
-				storageString += key + "=" + s.get(key) +":";
+			for (String key : s.getMappings().keySet()) {
+				storageString += key + "=" + s.getMappings().get(key) +":";
 			}
 			storageString = storageString.substring(0, storageString.length()-1);			
 		}
@@ -134,7 +134,7 @@ class Configuration {
 		}else{
 			System.out.println("Evalutation Stack: " +evalString+"\n");
 		}
-		if(s.isEmpty()){
+		if(s.getMappings().isEmpty()){
 			System.out.println("Storage: " +storageString + " (Empty)\n");
 		}else{
 			System.out.println("Storage: " +storageString+"\n");

@@ -19,7 +19,7 @@ class VirtualMachine {
 			EvalObj eo;
 			int a1, a2, n;
 			switch(conf.peekInst().opcode){
-				case ADD: 
+				case ADD:
 					//consume
 					conf.getInst();
 					// Get lhs
