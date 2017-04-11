@@ -191,11 +191,13 @@ class VirtualMachine {
 						break;
 				}
 				
-			}else{
+			}else{	
 				//CATCH
-				Catch cat = (Catch) conf.getInst();
-				conf.addCode(cat.c2);
-				conf.getState().setExceptionalState(false);
+				if(conf.peekInst().opcode == Opcode.CATCH){
+					Catch cat = (Catch) conf.getInst();
+					conf.addCode(cat.c2);
+					conf.getState().setExceptionalState(false);
+				}
 			}
 			
 		}
