@@ -10,11 +10,14 @@ public class Main {
 
 	private static boolean pressKeyToContinue(){ 
 
-		System.out.println(ANSI_GREEN+ "Press enter key to continue or write 'skip' to go to the end" + ANSI_RESET);
+		System.out.println(ANSI_GREEN+ "Press enter key to continue or write 'skip' to go to the end or 'exit' to quit" + ANSI_RESET);
 		try{
 			Scanner sc = new Scanner(System.in);
-			if(sc.nextLine().equals("skip")){
+			String str = sc.nextLine();
+			if(str.equals("skip")){
 				return false;
+			}else if(str.equals("exit")){
+				System.exit(0);
 			}
 		}  
 		catch(Exception e){
@@ -26,8 +29,41 @@ public class Main {
 		// - Compile s into AM Code
 		Stm s = WhileParser.parse(args[0]);
 		Code y = s.accept(new CompileVisitor());
-		
+			
+		//Collect all variables
+		HashSet<String> vars = new HashSet<String>();
+		for (Inst i : y) {
+			switch(i.opcode){
+				case STORE:
+					Store str = (Store) i;
+					vars.add(str.x);
+					break;
+				case FETCH:
+					Fetch fet = (Fetch) i;
+					vars.add(fet.x);
+					break;
+			}
+		}
+
+		//Add inputed variables if wanted
 		Configuration conf = new Configuration(y);
+		ArrayList<String> vars2 = new ArrayList<String>(vars);
+		System.out.println("Do you want to assign values to the varaibles? ");
+		System.out.println("Press enter to skip to the next variable");
+		if(pressKeyToContinue()){
+			Scanner scan = new Scanner(System.in);
+			for (int i = 0; i < vars.size() ; i++ ) {
+				System.out.print(vars2.get(i) + " = ");
+				try{
+				conf.addStorage(vars2.get(i), Integer.parseInt(scan.nextLine()));
+				}catch (Exception e){
+					System.out.println("Skipped " + vars2.get(i));
+				}
+			}
+		}
+		
+
+		//Run program on VM
 		VirtualMachine VM = new VirtualMachine();
 		boolean steps = true;
 		while(conf.hasNext()){
@@ -38,7 +74,6 @@ public class Main {
 			conf = VM.step(conf);
 		}
 		conf.printConfig();
-
-        // - Execute resulting AM Code using a step-function. */
+		
 	}
 }
