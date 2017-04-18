@@ -80,7 +80,7 @@ class Configuration {
 	/*
 	* Get the storage list
 	*/
-	public HashMap<String,Integer> getStorage(){
+	public HashMap<String,Integer> getStorage() {
 		return s.getMappings();
 	}
 

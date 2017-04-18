@@ -72,12 +72,20 @@ class VirtualMachine {
 						break;
 					case FETCH:
 						Fetch f = (Fetch) conf.getInst();
-						// get value from storage
-						n = conf.getStorage().get(f.x);
-						// Add value to eval stack
-						eo = new EvalObj(n);
-						conf.addEval(eo);
-						break;
+						
+						try {
+							// get value from storage
+							n = conf.getStorage().get(f.x);
+							// Add value to eval stack
+							eo = new EvalObj(n);
+							conf.addEval(eo);
+							break;
+						} catch (NullPointerException e) {
+							System.out.println("Variable doesn't exist.");
+							System.exit(1);
+						}
+						
+						
 					case LE:
 						//consume
 						conf.getInst();
@@ -189,14 +197,19 @@ class VirtualMachine {
 						c1.add(cat);
 						conf.addCode(c1);
 						break;
+					case CATCH:
+						conf.getInst();
 				}
 				
 			}else{	
 				//CATCH
-				if(conf.peekInst().opcode == Opcode.CATCH){
+				if(conf.peekInst().opcode == Inst.Opcode.CATCH){
 					Catch cat = (Catch) conf.getInst();
 					conf.addCode(cat.c2);
 					conf.getState().setExceptionalState(false);
+				}
+				else {
+					conf.getInst();
 				}
 			}
 			
