@@ -147,6 +147,12 @@ class Configuration {
 			System.out.println("Storage: " +storageString+"\n");
 		}
 
+		if(s.getExceptionalState()){
+			System.out.println("State: Abnormal\n");
+		}else{
+			System.out.println("State: Normal \n");
+		}
+
 		System.out.println("<" + codeString + ", " + evalString + ", " + storageString + ">"+"\n");
 	}
 }
