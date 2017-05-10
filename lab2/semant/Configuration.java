@@ -2,6 +2,7 @@ package semant;
 
 import semant.amsyntax.*;
 import semant.whilesyntax.*;
+import semant.signexc.*;
 import java.util.Stack;
 import java.util.ArrayList;
 import java.util.*;
@@ -12,6 +13,7 @@ class Configuration {
 	private State s = new State();
 	private int stepCount = 1;
 	private boolean complete = false;
+	private SignExcOps ops = new SignExcOps();
 
 	/*
 	* Constructor for the Configurations class
@@ -80,11 +82,15 @@ class Configuration {
 	/*
 	* Get the storage list
 	*/
-	public HashMap<String,Integer> getStorage() {
+	public HashMap<String,SignExc> getStorage() {
 		return s.getMappings();
 	}
 
 	public void addStorage(String x, int n) {
+		s.getMappings().put(x,ops.abs(n));
+	}
+
+	public void addStorage(String x, SignExc n) {
 		s.getMappings().put(x,n);
 	}
 

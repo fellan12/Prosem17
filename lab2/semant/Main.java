@@ -66,31 +66,26 @@ public class Main {
 		
 
 		//Run program on VM
-		VirtualMachine VM = new VirtualMachine();
-		boolean steps = true;
-		Set<Configuration> confs1 = new Set<Configuration>();
-		Set<Configuration> confs2 = new Set<Configuration>();
-		confs1.add(conf);
-		Iterator it = confs1.interator();
-		while(it.hasNext()){
-			conf = it.next();
-			if(conf.hasNext()){
-				conf.printConfig();
-				if(steps){
-					steps = pressKeyToContinue();
-				}
-				conf2.addall(VM.step(conf));
-			}
-		}
+  		VirtualMachine VM = new VirtualMachine();
+  		boolean steps = true;
+  		Set<Configuration> confs = new HashSet<Configuration>();
+  		while(conf.hasNext()){
+ 			conf.printConfig();
+ 			if(steps){
+ 				steps = pressKeyToContinue();
+ 			}
+  			confs.addAll(VM.step(conf));
+  		}
 		
 		conf.printConfig();
 		
 	}
 
 	public void steep(Set<Configuration> confs) {
+		/*
 		Iterator it = confs.interator();
 		while(it.hasNext()){
-			conf = it.next();
+			conf = (Configuration) it.next();
 			while(conf.hasNext()){
 				conf.printConfig();
 				if(steps){
@@ -99,5 +94,6 @@ public class Main {
 				steep(VM.step(conf));
 			}
 		}
+		*/
 	}
 }

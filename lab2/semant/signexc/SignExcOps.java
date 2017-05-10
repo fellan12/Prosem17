@@ -161,7 +161,7 @@ public class SignExcOps implements Operations<SignExc, TTExc> {
     public boolean possiblyTrue(TTExc b) {
         return b == TT || b == T || b == ANY_B;
     }
-    
+
     public SignExc subtract(SignExc a1, SignExc a2) {
         return SUB_MAP[a1.ordinal()][a2.ordinal()];
     }

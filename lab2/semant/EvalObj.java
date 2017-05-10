@@ -2,6 +2,7 @@ package semant;
 
 import semant.amsyntax.*;
 import semant.whilesyntax.*;
+import semant.signexc.*;
 import java.util.Stack;
 import java.util.ArrayList;
 import java.util.*;
@@ -12,12 +13,12 @@ class EvalObj {
 	private boolean intSet = false;
 	private boolean boolSet = false;
 
-	public EvalObj(int n) {
+	public EvalObj(SignExc n) {
 		intVal = n;
 		intSet = true;
 	}
 
-	public EvalObj(boolean b) {
+	public EvalObj(TTExc b) {
 		boolVal = b;
 		boolSet = true;
 	}
