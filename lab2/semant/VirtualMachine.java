@@ -9,8 +9,6 @@ import java.util.ArrayList;
 import java.util.*;
 
 class VirtualMachine {
-	// TODO: try catch for EvalObj int / bool
-
 	/*
 	* Computes one step from the configurations
 	*/
@@ -39,6 +37,63 @@ class VirtualMachine {
 							System.out.println("a1 or a2 was not Int");
 							System.exit(1);
 						}
+
+
+					case SUB:
+						//consume
+						conf.getInst();
+						// Get lhs
+						a1 = conf.getEval().getSign();
+						// Get rhs
+						a2 = conf.getEval().getSign();
+						// add diff to stack
+						if(ops.isInt(a1) && ops.isInt(a2)){
+							eo = new EvalObj(ops.subtract(a1,a2));
+							conf.addEval(eo);
+							break;
+						}else{
+							System.out.println("a1 or a2 was not Int");
+							System.exit(1);
+						}
+
+
+					case MULT:
+						//consume
+						conf.getInst(); 
+						// Get lhs
+						a1 = conf.getEval().getSign();
+						// Get rhs
+						a2 = conf.getEval().getSign();
+						// add product to stack
+						if(ops.isInt(a1) && ops.isInt(a2)){
+							eo = new EvalObj(ops.multiply(a1,a2));
+							conf.addEval(eo);
+							break;
+						}else{
+							System.out.println("a1 or a2 was not Int");
+							System.exit(1);
+						}
+
+
+					case DIV:
+						//consume
+						conf.getInst();
+						// Get lhs
+						a1 = conf.getEval().getSign();
+						// Get rhs
+						a2 = conf.getEval().getSign();
+						if(ops.isInt(a1) && ops.isInt(a2)){
+							if(a2 != SignExc.ZERO){
+								eo = new EvalObj(ops.divide(a1,a2));
+								conf.addEval(eo);
+							}else{
+								conf.getState().setExceptionalState(true);
+							}
+							break;
+						}else{
+							System.out.println("a1 or a2 was not Int");
+							System.exit(1);
+						}
 					
 
 					case AND:
@@ -53,18 +108,6 @@ class VirtualMachine {
 						conf.addEval(eo);
 						break;
 					
-					
-
-					case BRANCH:
-						Branch b = (Branch) conf.getInst();
-						// Pop stack to see tt or ff
-						if (conf.getEval().getTT() == TTExc.TT) {
-							conf.addCode(b.c1);
-						} else {
-							conf.addCode(b.c2);
-						}
-						break;
-					
 
 					case EQ:
 						//consume
@@ -77,12 +120,48 @@ class VirtualMachine {
 						eo = new EvalObj(ops.eq(a1,a2));
 						conf.addEval(eo);
 						break;
-					
+
+
+					case LE:
+						//consume
+						conf.getInst();
+						// Get lhs
+						a1 = conf.getEval().getSign();
+						// Get rhs
+						a2 = conf.getEval().getSign();
+						// add res to stack
+						if(ops.isInt(a1) && ops.isInt(a2)){
+							eo = new EvalObj(ops.leq(a1,a2));
+							conf.addEval(eo);
+							break;
+						}else{
+							System.out.println("a1 or a2 was not Int");
+							System.exit(1);
+						}
+
+
+					case TRUE:
+						//consume
+						conf.getInst();
+						// Add true to evalstack
+						eo = new EvalObj(TTExc.TT);
+						conf.addEval(eo);
+						break;
+
 
 					case FALSE:
 						conf.getInst();
 						// Add false to evalstack
 						eo = new EvalObj(TTExc.FF);
+						conf.addEval(eo);
+						break;
+
+
+					case NEG:
+						//consume
+						conf.getInst();
+						// If true, add false to stack, otherwise add true.
+						eo = new EvalObj(ops.neg(conf.getEval().getTT()));
 						conf.addEval(eo);
 						break;
 					
@@ -108,76 +187,6 @@ class VirtualMachine {
 							System.out.println("Variable doesn't exist.");
 							System.exit(1);
 						}
-						
-						
-					case LE:
-						//consume
-						conf.getInst();
-						// Get lhs
-						a1 = conf.getEval().getSign();
-						// Get rhs
-						a2 = conf.getEval().getSign();
-						// add res to stack
-						if(ops.isInt(a1) && ops.isInt(a2)){
-							eo = new EvalObj(ops.leq(a1,a2));
-							conf.addEval(eo);
-							break;
-						}else{
-							System.out.println("a1 or a2 was not Int");
-							System.exit(1);
-						}
-						
-
-
-					case LOOP:
-						Loop l = (Loop) conf.getInst();
-						// Create branch component
-						c1 = new Code();
-						c1.addAll(l.c2);
-						c1.add(l);
-						c2 = new Code();
-						c2.add(new Noop());
-						Branch br = new Branch(c1, c2);
-						// Add code to code stack
-						Code c3 = new Code();
-						c3.add(br);
-						conf.addCode(c3);
-						conf.addCode(l.c1);
-						break;
-					
-
-					case MULT:
-						//consume
-						conf.getInst(); 
-						// Get lhs
-						a1 = conf.getEval().getSign();
-						// Get rhs
-						a2 = conf.getEval().getSign();
-						// add product to stack
-						if(ops.isInt(a1) && ops.isInt(a2)){
-							eo = new EvalObj(ops.multiply(a1,a2));
-							conf.addEval(eo);
-							break;
-						}else{
-							System.out.println("a1 or a2 was not Int");
-							System.exit(1);
-						}
-				
-
-					case NEG:
-						//consume
-						conf.getInst();
-						// If true, add false to stack, otherwise add true.
-						eo = new EvalObj(ops.neg(conf.getEval().getTT()));
-						conf.addEval(eo);
-						break;
-					
-
-					case NOOP:
-						//consume
-						conf.getInst();
-						// Do nothing.
-						break;
 
 
 					case PUSH:
@@ -195,59 +204,36 @@ class VirtualMachine {
 						// Get variable from store instruction
 						String x = s.x;
 						// Add mapping to storage
-						System.out.println("HERE");
 						conf.addStorage(x, n);
-						System.out.println("HERE");
+						break;						
+
+
+					case LOOP:
+						Loop l = (Loop) conf.getInst();
+						// Create branch component
+						c1 = new Code();
+						c1.addAll(l.c2);
+						c1.add(l);
+						c2 = new Code();
+						c2.add(new Noop());
+						Branch br = new Branch(c1, c2);
+						// Add code to code stack
+						Code c3 = new Code();
+						c3.add(br);
+						conf.addCode(c3);
+						conf.addCode(l.c1);
 						break;
 
 
-					case SUB:
-						//consume
-						conf.getInst();
-						// Get lhs
-						a1 = conf.getEval().getSign();
-						// Get rhs
-						a2 = conf.getEval().getSign();
-						// add diff to stack
-						if(ops.isInt(a1) && ops.isInt(a2)){
-							eo = new EvalObj(ops.subtract(a1,a2));
-							conf.addEval(eo);
-							break;
-						}else{
-							System.out.println("a1 or a2 was not Int");
-							System.exit(1);
+					case BRANCH:
+						Branch b = (Branch) conf.getInst();
+						// Pop stack to see tt or ff
+						if (conf.getEval().getTT() == TTExc.TT) {
+							conf.addCode(b.c1);
+						} else {
+							conf.addCode(b.c2);
 						}
-					
-
-					case TRUE:
-						//consume
-						conf.getInst();
-						// Add true to evalstack
-						eo = new EvalObj(TTExc.TT);
-						conf.addEval(eo);
 						break;
-
-
-					case DIV:
-						//consume
-						conf.getInst();
-						// Get lhs
-						a1 = conf.getEval().getSign();
-						// Get rhs
-						a2 = conf.getEval().getSign();
-						if(ops.isInt(a1) && ops.isInt(a2)){
-							if(a2 != SignExc.ZERO){
-								eo = new EvalObj(ops.divide(a1,a2));
-								conf.addEval(eo);
-							}else{
-								conf.getState().setExceptionalState(true);
-							}
-							break;
-						}else{
-							System.out.println("a1 or a2 was not Int");
-							System.exit(1);
-						}
-						
 
 
 					case TRYC:
@@ -257,8 +243,17 @@ class VirtualMachine {
 						c1.add(cat);
 						conf.addCode(c1);
 						break;
+
+
 					case CATCH:
 						conf.getInst();
+
+
+					case NOOP:
+						//consume
+						conf.getInst();
+						// Do nothing.
+						break;
 				}
 				
 			}else{	
