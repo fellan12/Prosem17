@@ -9,6 +9,8 @@ import java.util.ArrayList;
 import java.util.*;
 
 class VirtualMachine {
+	//TODO HANTERA FÖR ANY KONCEPT					
+
 	/*
 	* Computes one step from the configurations
 	*/
@@ -217,21 +219,36 @@ class VirtualMachine {
 						c2 = new Code();
 						c2.add(new Noop());
 						Branch br = new Branch(c1, c2);
-						// Add code to code stack
+						// Add branch code to code stack
 						Code c3 = new Code();
 						c3.add(br);
 						conf.addCode(c3);
 						conf.addCode(l.c1);
 						break;
 
-
+					
+					//TODO HANTERA FÖR ANY KONCEPT					
 					case BRANCH:
 						Branch b = (Branch) conf.getInst();
 						// Pop stack to see tt or ff
-						if (conf.getEval().getTT() == TTExc.TT) {
+						eo = conf.getEval();
+						if (eo.getTT() == TTExc.TT) {
 							conf.addCode(b.c1);
-						} else {
+						} else if (eo.getTT() == TTExc.FF) {
 							conf.addCode(b.c2);
+						} else /*TTExc == T*/{
+							//Case TT
+							Configuration con1 = new Configuration(conf);
+							con1.addCode(b.c1);
+							con1.increaseStepCount();
+							//Case FF
+							Configuration con2 = new Configuration(conf);
+							con2.addCode(b.c2);
+							con2.increaseStepCount();
+							//Add both to conf set
+							confs.add(con1);
+							confs.add(con2);
+							return confs;
 						}
 						break;
 

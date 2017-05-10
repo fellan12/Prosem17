@@ -22,6 +22,14 @@ class Configuration {
 		this.c = c;
 	}
 
+	public Configuration(Configuration conf){
+		this.c = conf.getCode();
+		this.e = conf.getEvalStack();
+		this.s = conf.getState();
+		this.stepCount = conf.getStepCount();
+		this.complete = !conf.hasNext();
+	}
+
 	public int getStepCount(){
 		return stepCount;
 	}
@@ -73,6 +81,10 @@ class Configuration {
 	*/
 	public EvalObj getEval(){
 		return e.pop();
+	}
+
+	public Stack<EvalObj> getEvalStack(){
+		return e;
 	}
 
 	public void addEval(EvalObj x){

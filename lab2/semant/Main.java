@@ -28,9 +28,7 @@ public class Main {
 	public static void main(String[] args) throws Exception {
 		// - Compile s into AM Code
 		Stm s = WhileParser.parse(args[0]); 
-		System.out.println(s);
 		Code y = s.accept(new CompileVisitor());
-		System.out.println(y);
 			
 		//Collect all variables
 		HashSet<String> vars = new HashSet<String>();
@@ -68,8 +66,48 @@ public class Main {
 		//Run program on VM
   		VirtualMachine VM = new VirtualMachine();
   		boolean steps = true;
+  		Set<Configuration> confs1 = new HashSet<Configuration>();
+  		Set<Configuration> confs2 = new HashSet<Configuration>();
+  		Set<Configuration> confs3 = new HashSet<Configuration>();
+  		confs1.add(conf);
+  		while(!confs1.isEmpty()){
+  			for (Configuration con : confs1) {
+  				System.out.println("Configuration Set Size: " + confs1.size());
+  				System.out.println("Complete Set Size " + confs3.size());
+	 			con.printConfig();
+	 			if(steps){
+	 				steps = pressKeyToContinue();
+	 			}
+	  			confs2.addAll(VM.step(con));
+  				for (Configuration con1 : confs2) {
+  					if(con1.hasNext() == false){
+  					confs2.remove(con);
+  					confs3.add(con);
+  					}
+  				}  			
+  			}
+  			confs1.clear();
+  			confs1.addAll(confs2);
+  			confs2.clear();
+  			System.out.println("#######################################################################################################################################");
+  			System.out.println("#######################################################################################################################################");
+  		}
+
+		
+		conf.printConfig();
+
+
+
+
+
+		/*
+		//Run program on VM
+  		VirtualMachine VM = new VirtualMachine();
+  		boolean steps = true;
   		Set<Configuration> confs = new HashSet<Configuration>();
+  		confs.add(conf);
   		while(conf.hasNext()){
+  			System.out.println("Configuration Set Size: " + confs.size());
  			conf.printConfig();
  			if(steps){
  				steps = pressKeyToContinue();
@@ -78,6 +116,7 @@ public class Main {
   		}
 		
 		conf.printConfig();
+		*/
 		
 	}
 
