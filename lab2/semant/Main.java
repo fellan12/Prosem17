@@ -95,8 +95,9 @@ public class Main {
   			System.out.println("#######################################################################################################################################");
   		}
 
-		
-		conf.printConfig();
+		for (Configuration c : confs3) {
+			c.printConfig();
+		}
 
 
 
