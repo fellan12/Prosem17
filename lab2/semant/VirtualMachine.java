@@ -439,16 +439,42 @@ class VirtualMachine {
 						n = conf.getEval().getSign();
 						// Get variable from store instruction
 						String x = s.x;
-						
-						if(ops.n){
-							conf.getState.setExceptionalState(true);
-						}
-
-
-
 						// Add mapping to storage
-						conf.addStorage(x, n);
-						break;						
+						if(n == SignExc.ERR_A || n == TTExc.ERR_B){
+							conf.getState.setExceptionalState(true);
+						}else if(n == SignExc.ANY_A){
+							//Case Z
+							Configuration con1 = new Configuration(conf);
+							con1.addStorage(x, SignExc.Z);
+							con1.increaseStepCount();
+							//Case ERR
+							Configuration con2 = new Configuration(conf);
+							con2.addStorage(x, SignExc.ERR_A);
+							con2.increaseStepCount();
+							con2.getState().setExceptionalState(true);
+							//Add both to conf set
+							confs.add(con1);
+							confs.add(con2);
+							return confs;
+						}else if(n == TTExc.ANY_B){
+							//Case T
+							Configuration con1 = new Configuration(conf);
+							con1.addStorage(x, TTExc.T);
+							con1.increaseStepCount();
+							//Case ERR
+							Configuration con2 = new Configuration(conf);
+							con2.addStorage(x, TTExc.ERR_B);
+							con2.increaseStepCount();
+							con2.getState().setExceptionalState(true);
+							//Add both to conf set
+							confs.add(con1);
+							confs.add(con2);
+							return confs;
+						}else{
+							conf.addStorage(x, n);
+							break;	
+						}
+											
 
 
 					case LOOP:
