@@ -20,6 +20,7 @@ class VirtualMachine {
 			EvalObj eo;
 			SignExc a1, a2, n;
 			Code c1,c2;
+			Configuration con1,con2,con3;
 			if(!conf.getState().getExceptionalState()){
 				SignExcOps ops = new SignExcOps();
 				switch(conf.peekInst().opcode){
@@ -34,12 +35,12 @@ class VirtualMachine {
 						switch(ops.add(a1,a2)){
 							case ANY_A:
 								//Case Z
-								Configuration con1 = new Configuration(conf);
+								con1 = new Configuration(conf);
 								eo = new EvalObj(SignExc.Z);
 								con1.addEval(eo);
 								con1.increaseStepCount();
 								//Case ERR
-								Configuration con2 = new Configuration(conf);
+								con2 = new Configuration(conf);
 								eo = new EvalObj(SignExc.ERR_A);
 								con2.addEval(eo);
 								con2.increaseStepCount();
@@ -80,12 +81,12 @@ class VirtualMachine {
 						switch(ops.subtract(a1,a2)){
 							case ANY_A:
 								//Case Z
-								Configuration con1 = new Configuration(conf);
+								con1 = new Configuration(conf);
 								eo = new EvalObj(SignExc.Z);
 								con1.addEval(eo);
 								con1.increaseStepCount();
 								//Case ERR
-								Configuration con2 = new Configuration(conf);
+								con2 = new Configuration(conf);
 								eo = new EvalObj(SignExc.ERR_A);
 								con2.addEval(eo);
 								con2.increaseStepCount();
@@ -126,12 +127,12 @@ class VirtualMachine {
 						switch(ops.multiply(a1,a2)){
 							case ANY_A:
 								//Case Z
-								Configuration con1 = new Configuration(conf);
+								con1 = new Configuration(conf);
 								eo = new EvalObj(SignExc.Z);
 								con1.addEval(eo);
 								con1.increaseStepCount();
 								//Case ERR
-								Configuration con2 = new Configuration(conf);
+								con2 = new Configuration(conf);
 								eo = new EvalObj(SignExc.ERR_A);
 								con2.addEval(eo);
 								con2.increaseStepCount();
@@ -172,12 +173,12 @@ class VirtualMachine {
 						switch(ops.divide(a1,a2)){
 							case ANY_A:
 								//Case Z
-								Configuration con1 = new Configuration(conf);
+								con1 = new Configuration(conf);
 								eo = new EvalObj(SignExc.Z);
 								con1.addEval(eo);
 								con1.increaseStepCount();
 								//Case ERR
-								Configuration con2 = new Configuration(conf);
+								con2 = new Configuration(conf);
 								eo = new EvalObj(SignExc.ERR_A);
 								con2.addEval(eo);
 								con2.increaseStepCount();
@@ -217,12 +218,12 @@ class VirtualMachine {
 						switch(ops.and(b1,b2)){
 							case ANY_B:
 								//Case Z
-								Configuration con1 = new Configuration(conf);
+								con1 = new Configuration(conf);
 								eo = new EvalObj(TTExc.T);
 								con1.addEval(eo);
 								con1.increaseStepCount();
 								//Case ERR
-								Configuration con2 = new Configuration(conf);
+								con2 = new Configuration(conf);
 								eo = new EvalObj(TTExc.ERR_B);
 								con2.addEval(eo);
 								con2.increaseStepCount();
@@ -263,12 +264,12 @@ class VirtualMachine {
 						switch(ops.eq(a1,a2)){
 							case ANY_B:
 								//Case Z
-								Configuration con1 = new Configuration(conf);
+								con1 = new Configuration(conf);
 								eo = new EvalObj(TTExc.T);
 								con1.addEval(eo);
 								con1.increaseStepCount();
 								//Case ERR
-								Configuration con2 = new Configuration(conf);
+								con2 = new Configuration(conf);
 								eo = new EvalObj(TTExc.ERR_B);
 								con2.addEval(eo);
 								con2.increaseStepCount();
@@ -309,12 +310,12 @@ class VirtualMachine {
 						switch(ops.leq(a1,a2)){
 							case ANY_B:
 								//Case Z
-								Configuration con1 = new Configuration(conf);
+								con1 = new Configuration(conf);
 								eo = new EvalObj(TTExc.T);
 								con1.addEval(eo);
 								con1.increaseStepCount();
 								//Case ERR
-								Configuration con2 = new Configuration(conf);
+								con2 = new Configuration(conf);
 								eo = new EvalObj(TTExc.ERR_B);
 								con2.addEval(eo);
 								con2.increaseStepCount();
@@ -368,12 +369,12 @@ class VirtualMachine {
 						switch(ops.neg(conf.getEval().getTT())){
 							case ANY_B:
 								//Case Z
-								Configuration con1 = new Configuration(conf);
+								con1 = new Configuration(conf);
 								eo = new EvalObj(TTExc.T);
 								con1.addEval(eo);
 								con1.increaseStepCount();
 								//Case ERR
-								Configuration con2 = new Configuration(conf);
+								con2 = new Configuration(conf);
 								eo = new EvalObj(TTExc.ERR_B);
 								con2.addEval(eo);
 								con2.increaseStepCount();
@@ -440,30 +441,16 @@ class VirtualMachine {
 						// Get variable from store instruction
 						String x = s.x;
 						// Add mapping to storage
-						if(n == SignExc.ERR_A || n == TTExc.ERR_B){
-							conf.getState.setExceptionalState(true);
+						if(n == SignExc.ERR_A){
+							conf.getState().setExceptionalState(true);
 						}else if(n == SignExc.ANY_A){
 							//Case Z
-							Configuration con1 = new Configuration(conf);
+							con1 = new Configuration(conf);
 							con1.addStorage(x, SignExc.Z);
 							con1.increaseStepCount();
 							//Case ERR
-							Configuration con2 = new Configuration(conf);
+							con2 = new Configuration(conf);
 							con2.addStorage(x, SignExc.ERR_A);
-							con2.increaseStepCount();
-							con2.getState().setExceptionalState(true);
-							//Add both to conf set
-							confs.add(con1);
-							confs.add(con2);
-							return confs;
-						}else if(n == TTExc.ANY_B){
-							//Case T
-							Configuration con1 = new Configuration(conf);
-							con1.addStorage(x, TTExc.T);
-							con1.increaseStepCount();
-							//Case ERR
-							Configuration con2 = new Configuration(conf);
-							con2.addStorage(x, TTExc.ERR_B);
 							con2.increaseStepCount();
 							con2.getState().setExceptionalState(true);
 							//Add both to conf set
@@ -499,23 +486,57 @@ class VirtualMachine {
 						Branch b = (Branch) conf.getInst();
 						// Pop stack to see tt or ff
 						eo = conf.getEval();
-						if (eo.getTT() == TTExc.TT) {
-							conf.addCode(b.c1);
-						} else if (eo.getTT() == TTExc.FF) {
-							conf.addCode(b.c2);
-						} else /*TTExc == T*/{
-							//Case TT
-							Configuration con1 = new Configuration(conf);
-							con1.addCode(b.c1);
-							con1.increaseStepCount();
-							//Case FF
-							Configuration con2 = new Configuration(conf);
-							con2.addCode(b.c2);
-							con2.increaseStepCount();
-							//Add both to conf set
-							confs.add(con1);
-							confs.add(con2);
-							return confs;
+
+						switch(eo.getTT()){
+							case TT:
+								conf.addCode(b.c1);
+
+							case FF:
+								conf.addCode(b.c2);
+
+							case T:
+								//Case TT
+								con1 = new Configuration(conf);
+								con1.addCode(b.c1);
+								con1.increaseStepCount();
+								//Case FF
+								con2 = new Configuration(conf);
+								con2.addCode(b.c2);
+								con2.increaseStepCount();
+								//Add both to conf set
+								confs.add(con1);
+								confs.add(con2);
+								return confs;
+
+							case ERR_B:
+								conf.getState().setExceptionalState(true);
+								conf.increaseStepCount();
+
+							case NONE_B:
+
+
+							case ANY_B:
+								//Case T
+								//Case TT
+								con1 = new Configuration(conf);
+								con1.addCode(b.c1);
+								con1.increaseStepCount();
+								//Case FF
+								con2 = new Configuration(conf);
+								con2.addCode(b.c2);
+								con2.increaseStepCount();
+								//Add both to conf set
+								confs.add(con1);
+								confs.add(con2);
+								//Case ERR_B
+								con3 = new Configuration(conf);
+								con3.getState().setExceptionalState(true);
+								con3.increaseStepCount();
+								//Add all to confs set
+								confs.add(con1);
+								confs.add(con2);
+								confs.add(con3);
+								return confs;
 						}
 						break;
 
