@@ -72,7 +72,9 @@ public class Main {
   		confs1.add(conf);
   		while(!confs1.isEmpty()){
   			for (Configuration con : confs1) {
+  				//Current configs to compute
   				System.out.println("Configuration Set Size: " + confs1.size());
+  				//Configs that have no code left
   				System.out.println("Complete Set Size " + confs3.size());
 	 			con.printConfig();
 	 			if(steps){

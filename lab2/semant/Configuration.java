@@ -22,9 +22,12 @@ class Configuration {
 		this.c = c;
 	}
 
+	/*
+	* Constructor for copying another Configuration
+	*/
 	public Configuration(Configuration conf){
-		this.c = conf.getCode();
-		this.e = conf.getEvalStack();
+		this.c = (Code) conf.getCode().clone();
+		this.e.addAll(conf.getEvalStack());
 		this.s = conf.getState();
 		this.stepCount = conf.getStepCount();
 		this.complete = !conf.hasNext();
@@ -49,6 +52,10 @@ class Configuration {
 	public Code getCode(){
 		return c;
 	}
+
+	/*
+	* Add code to Code List
+	*/
 	public void addCode(Code cd){
 		c.addAll(0,cd);
 	}
@@ -63,7 +70,7 @@ class Configuration {
 	}
 
 	/*
-	*
+	* Get current state
 	*/
 	public State getState(){
 		return s;
@@ -83,10 +90,16 @@ class Configuration {
 		return e.pop();
 	}
 
+	/*
+	* Get Evalutation Stack
+	*/
 	public Stack<EvalObj> getEvalStack(){
 		return e;
 	}
 
+	/*
+	* Add EvalObj to EvalStack
+	*/
 	public void addEval(EvalObj x){
 		e.push(x);
 	}
