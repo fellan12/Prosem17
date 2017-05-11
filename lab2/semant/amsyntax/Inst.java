@@ -35,4 +35,7 @@ public abstract class Inst {
         return toString().hashCode();
     }
     
+    public int getControlPoint(){
+        return stmControlPoint;
+    }
 }

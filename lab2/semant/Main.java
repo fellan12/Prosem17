@@ -2,6 +2,7 @@ package semant;
 
 import semant.whilesyntax.Stm;
 import semant.amsyntax.*;
+import semant.signexc.*;
 import java.util.*;
 
 public class Main {
@@ -55,7 +56,7 @@ public class Main {
 			for (int i = 0; i < vars.size() ; i++ ) {
 				System.out.print(vars2.get(i) + " = ");
 				try{
-				conf.addStorage(vars2.get(i), Integer.parseInt(scan.nextLine()));
+					conf.addStorage(vars2.get(i), SignExc.Z);
 				}catch (Exception e){
 					System.out.println("Skipped " + vars2.get(i));
 				}
@@ -66,61 +67,55 @@ public class Main {
 		//Run program on VM
   		VirtualMachine VM = new VirtualMachine();
   		boolean steps = true;
-  		Set<Configuration> confs1 = new HashSet<Configuration>();
-  		Set<Configuration> confs2 = new HashSet<Configuration>();
-  		Set<Configuration> confs3 = new HashSet<Configuration>();
-  		confs1.add(conf);
-  		while(!confs1.isEmpty()){
-  			for (Configuration con : confs1) {
-  				//Current configs to compute
-  				System.out.println("Configuration Set Size: " + confs1.size());
-  				//Configs that have no code left
-  				System.out.println("Complete Set Size " + confs3.size());
-	 			con.printConfig();
-	 			if(steps){
-	 				steps = pressKeyToContinue();
-	 			}
-	  			confs2.addAll(VM.step(con));
-  				for (Configuration con1 : confs2) {
-  					if(con1.hasNext() == false){
-  					confs2.remove(con);
-  					confs3.add(con);
-  					}
-  				}  			
+  		Set<Configuration> stepConfs = new HashSet<Configuration>();
+  		Set<Configuration> newConfs = new HashSet<Configuration>();
+  		List<Configuration> confsGraph = new ArrayList<Configuration>();
+  		Set<Integer> visitedConfs = new HashSet<Integer>();
+  		stepConfs.add(conf);
+  		while(!stepConfs.isEmpty()){
+  			for (Configuration con : stepConfs) {
+  				if(!visitedConfs.contains(con.hashCode())){
+  					//Current configs to compute
+	  				System.out.println("Configuration Set Size: " + stepConfs.size());
+	  				//Configs that have no code left
+	  				System.out.println("Config Graph Set Size " + confsGraph.size());
+		 			con.printConfig();
+		 			if(steps){
+		 				steps = pressKeyToContinue();
+		 				confsGraph.removeIf(c -> c.getControlPoint() == 0);
+
+				  		for (Configuration c : confsGraph) {
+				  			
+				  			System.out.println(c.getControlPoint() + " " + c.getCode());
+				  			System.out.println(c.getState().printState());
+				 
+				  		}
+		 			}
+		 			visitedConfs.add(con.hashCode());
+		 			confsGraph.add(new Configuration(con));
+		  			newConfs.addAll(VM.step(con));
+
+		  			newConfs.removeIf(c -> c.hasNext() == false);
+	  				
+  				}else{
+  					stepConfs.remove(con);
+  				}
+  				
   			}
-  			confs1.clear();
-  			confs1.addAll(confs2);
-  			confs2.clear();
+  			stepConfs.clear();
+  			stepConfs.addAll(newConfs);
+  			newConfs.clear();
   			System.out.println("#######################################################################################################################################");
   			System.out.println("#######################################################################################################################################");
   		}
 
-		for (Configuration c : confs3) {
-			c.printConfig();
-		}
+  		confsGraph.removeIf(c -> c.getControlPoint() == 0);
 
-
-
-
-
-		/*
-		//Run program on VM
-  		VirtualMachine VM = new VirtualMachine();
-  		boolean steps = true;
-  		Set<Configuration> confs = new HashSet<Configuration>();
-  		confs.add(conf);
-  		while(conf.hasNext()){
-  			System.out.println("Configuration Set Size: " + confs.size());
- 			conf.printConfig();
- 			if(steps){
- 				steps = pressKeyToContinue();
- 			}
-  			confs.addAll(VM.step(conf));
+  		for (Configuration c : confsGraph) {
+  			System.out.println(c.getControlPoint() + " " + c.getCode());
+  			System.out.println(c.getState().printState());	
   		}
-		
-		conf.printConfig();
-		*/
-		
+  		
 	}
 
 	public void steep(Set<Configuration> confs) {

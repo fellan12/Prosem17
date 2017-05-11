@@ -21,6 +21,7 @@ class VirtualMachine {
 			SignExc a1, a2, n;
 			Code c1,c2;
 			Configuration con1,con2,con3;
+			System.out.println("ControlPoint: " + conf.getControlPoint());
 			if(!conf.getState().getExceptionalState()){
 				SignExcOps ops = new SignExcOps();
 				switch(conf.peekInst().opcode){
@@ -366,7 +367,8 @@ class VirtualMachine {
 						//consume
 						conf.getInst();
 						// If true, add false to stack, otherwise add true.
-						switch(ops.neg(conf.getEval().getTT())){
+						TTExc tt = conf.getEval().getTT();
+						switch(ops.neg(tt)){
 							case ANY_B:
 								//Case Z
 								con1 = new Configuration(conf);
@@ -396,7 +398,7 @@ class VirtualMachine {
 								break;
 
 							default:
-								eo = new EvalObj(ops.neg(conf.getEval().getTT()));
+								eo = new EvalObj(ops.neg(tt));
 								conf.addEval(eo);
 								break;
 						}
@@ -515,7 +517,7 @@ class VirtualMachine {
 								break;
 
 							case NONE_B:
-								//Nothing jump over Inst
+								//Nothing jump over
 								break;
 
 							case ANY_B:

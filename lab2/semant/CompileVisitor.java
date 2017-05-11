@@ -11,7 +11,7 @@ public class CompileVisitor implements WhileVisitor {
             System.out.println(str);
     }
 
-    int ccounter = 0;
+    int ccounter = 1;
     public Code visit(Compound compound) {
         Code c = new Code();
         c.addAll(compound.s1.accept(this));

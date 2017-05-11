@@ -14,6 +14,7 @@ class Configuration {
 	private int stepCount = 1;
 	private boolean complete = false;
 	private SignExcOps ops = new SignExcOps();
+	private int controlpoint = -1;
 
 	/*
 	* Constructor for the Configurations class
@@ -25,16 +26,33 @@ class Configuration {
 	/*
 	* Constructor for copying another Configuration
 	*/
-	public Configuration(Configuration conf){
+	public Configuration(Configuration conf) throws CloneNotSupportedException{
 		this.c = (Code) conf.getCode().clone();
-		this.e.addAll(conf.getEvalStack());
-		this.s = conf.getState();
+		this.e = (Stack) conf.getEvalStack().clone();
+		this.s = new State(conf.getState());
 		this.stepCount = conf.getStepCount();
 		this.complete = !conf.hasNext();
 	}
 
 	public int getStepCount(){
 		return stepCount;
+	}
+
+	public int hashCode(){
+		return c.hashCode() ^ e.hashCode() ^ s.hashCode();
+	}
+
+	public int getControlPoint(){
+		if(controlpoint == -1){
+			return c.get(0).getControlPoint();
+		}else {
+			setControlPoint(c.get(0).getControlPoint());
+			return controlpoint;
+		}
+	}
+
+	public void setControlPoint(int p){
+		controlpoint = p;
 	}
 
 	public void increaseStepCount(){
