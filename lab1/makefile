@@ -5,4 +5,4 @@ compile:
 run:
 	javac -cp .:java-cup-v11a.jar semant/Main.java
 
-	java -cp .:java-cup-v11a.jar semant.Main samples/fibonacci.while
+	java -cp .:java-cup-v11a.jar semant.Main samples/hej.while

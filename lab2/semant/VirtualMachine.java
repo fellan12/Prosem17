@@ -181,7 +181,6 @@ class VirtualMachine {
 								eo = new EvalObj(SignExc.ERR_A);
 								con2.addEval(eo);
 								con2.increaseStepCount();
-								con2.getState().setExceptionalState(true);
 								//Add both to conf set
 								confs.add(con1);
 								confs.add(con2);
@@ -440,6 +439,13 @@ class VirtualMachine {
 						n = conf.getEval().getSign();
 						// Get variable from store instruction
 						String x = s.x;
+						
+						if(ops.n){
+							conf.getState.setExceptionalState(true);
+						}
+
+
+
 						// Add mapping to storage
 						conf.addStorage(x, n);
 						break;						
@@ -516,7 +522,9 @@ class VirtualMachine {
 					conf.getState().setExceptionalState(false);
 				}
 				else {
+					conf.getEvalStack().clear();
 					conf.getInst();
+
 				}
 			}
 			

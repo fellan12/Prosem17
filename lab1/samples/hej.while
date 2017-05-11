@@ -1,12 +1,4 @@
 # should end with x = -7
 
 x := 0;
-try
-	x := 2/0;
-	try
-		x := 3
-	catch
-		x := 4
-catch
-	x := 2
-
+y := (2/x)+1
