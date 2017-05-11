@@ -490,9 +490,11 @@ class VirtualMachine {
 						switch(eo.getTT()){
 							case TT:
 								conf.addCode(b.c1);
+								break;
 
 							case FF:
 								conf.addCode(b.c2);
+								break;
 
 							case T:
 								//Case TT
@@ -510,10 +512,11 @@ class VirtualMachine {
 
 							case ERR_B:
 								conf.getState().setExceptionalState(true);
-								conf.increaseStepCount();
+								break;
 
 							case NONE_B:
-
+								//Nothing jump over Inst
+								break;
 
 							case ANY_B:
 								//Case T
