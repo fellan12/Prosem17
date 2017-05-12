@@ -15,6 +15,7 @@ class Configuration {
 	private boolean complete = false;
 	private SignExcOps ops = new SignExcOps();
 	private int controlpoint = -1;
+	private int parent = 1;
 	private int branch = 1;
 
 	/*
@@ -35,6 +36,7 @@ class Configuration {
 		this.complete = !conf.hasNext();
 		this.controlpoint = conf.getControlPoint();
 		this.branch = conf.getBranch();
+		this.parent = conf.getParent();
 	}
 
 	public int getStepCount(){
@@ -45,11 +47,20 @@ class Configuration {
 		return c.hashCode() ^ e.hashCode() ^ s.hashCode();
 	}
 
+	public String getBranchString(){
+		return parent + "-" + branch;
+	}
+
 	public int getBranch(){
 		return branch;
 	}
 
+	public int getParent(){
+		return parent;
+	}
+
 	public void setBranch(int b){
+		parent = b-1;
 		branch = b;
 	}
 

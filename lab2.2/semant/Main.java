@@ -77,13 +77,6 @@ public class Main {
 		 			con.printConfig();
 		 			if(steps){
 		 				steps = pressKeyToContinue();
-
-				  		for (Configuration c : confsGraph) {
-				  			
-				  			System.out.println(c.getControlPoint() + " " + c.getCode());
-				  			System.out.println(c.getState().printState());
-				 
-				  		}
 		 			}
 		 			visitedConfs.add(con.hashCode());
 		 			confsGraph.add(new Configuration(con));
@@ -105,20 +98,9 @@ public class Main {
   		}
 
   		for (Configuration c : confsGraph) {
-  			System.out.println(c.getBranch() + "-" + c.getControlPoint() + " " + c.getCode());
+  			System.out.println(c.getBranchString() + " (" + c.getControlPoint() + ") " + c.getCode());
   			System.out.println(c.getState().printState());  
-  		}
-
-
-  		for (int i = 0; i < confsGraph.size(); i++) {
-  			for (int j = 1; j < confsGraph.size()-1; j++) {
-  				if(confsGraph.get(i).equals(confsGraph.get(j))){
-  					confsGraph.remove(i);
-  				} 
-  			}
-
-			System.out.println(confsGraph.get(i).getBranch() + "-" + confsGraph.get(i).getControlPoint() + " " + confsGraph.get(i).getCode());
-  			System.out.println(confsGraph.get(i).getState().printState());  	
+  			System.out.println();
   		}
 	}
 }
