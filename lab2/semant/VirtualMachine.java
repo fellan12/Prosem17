@@ -14,7 +14,7 @@ class VirtualMachine {
 	/*
 	* Computes one step from the configurations
 	*/
-	public Set<Configuration> step(Configuration conf){
+	public Set<Configuration> step(Configuration conf) throws CloneNotSupportedException{
 		Set<Configuration> confs = new HashSet<Configuration>();
 		if(conf.hasNext()){
 			EvalObj eo;
@@ -189,7 +189,6 @@ class VirtualMachine {
 								return confs;
 
 							case ERR_A:
-								conf.getState().setExceptionalState(true);
 								eo = new EvalObj(SignExc.ERR_A);
 								conf.addEval(eo);
 								break;
