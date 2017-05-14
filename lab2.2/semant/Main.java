@@ -4,6 +4,7 @@ import semant.whilesyntax.Stm;
 import semant.amsyntax.*;
 import semant.signexc.*;
 import java.util.*;
+import java.io.*;
 
 public class Main {
 	public static final String ANSI_GREEN = "\u001B[32m";
@@ -117,6 +118,11 @@ public class Main {
   			System.out.println(c.getBranchString() + " (" + c.getControlPoint() + ") " + c.getCode());
   			System.out.println(c.getState().printState());  
   			System.out.println();
+  		}
+
+  		Scanner reader = new Scanner(new File(args[0]));
+  		while(reader.hasNext()){
+  			System.out.println(reader.nextLine());
   		}
 	}
 }
