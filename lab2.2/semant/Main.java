@@ -34,6 +34,7 @@ public class Main {
 		//Collect all variables
 		HashSet<String> vars = new HashSet<String>();
 		for (Inst i : y) {
+			System.out.println(i.getControlPoint() + " " + i);
 			switch(i.opcode){
 				case STORE:
 					Store str = (Store) i;
@@ -57,7 +58,18 @@ public class Main {
 				conf.addStorage(vars2.get(i), SignExc.Z);
 			}
 		}
-		
+
+		int exitPoint = 0;
+		for (Inst i : y){
+			if(i.getControlPoint() > exitPoint){
+				switch(i.opcode){
+					case BRANCH: exitPoint = i.getControlPoint()+2;
+						
+					default: exitPoint = i.getControlPoint()+1;
+				}
+			}
+		}
+
 
 		//Run program on VM
   		VirtualMachine VM = new VirtualMachine();
@@ -97,7 +109,11 @@ public class Main {
   			System.out.println("#######################################################################################################################################");
   		}
 
+  		confsGraph.removeIf(c -> c.getControlPoint() == 0);
   		for (Configuration c : confsGraph) {
+  			if(c.getControlPoint() > exitPoint){
+  				c.setControlPoint(-1);
+  			}
   			System.out.println(c.getBranchString() + " (" + c.getControlPoint() + ") " + c.getCode());
   			System.out.println(c.getState().printState());  
   			System.out.println();

@@ -9,7 +9,8 @@ import java.util.ArrayList;
 import java.util.*;
 
 class VirtualMachine {
-	//TODO HANTERA FÖR ANY KONCEPT					
+	//TODO HANTERA FÖR ANY KONCEPT	
+	int branchCount = 1;				
 
 	/*
 	* Computes one step from the configurations
@@ -40,12 +41,16 @@ class VirtualMachine {
 								eo = new EvalObj(SignExc.Z);
 								con1.addEval(eo);
 								con1.increaseStepCount();
+								con1.setControlPoint(conf.getControlPoint());
 								//Case ERR
 								con2 = new Configuration(conf);
 								eo = new EvalObj(SignExc.ERR_A);
 								con2.addEval(eo);
 								con2.increaseStepCount();
 								con2.getState().setExceptionalState(true);
+								branchCount = conf.getBranch()+1;
+								con2.setBranch(branchCount);
+								con2.setControlPoint(conf.getControlPoint());
 								//Add both to conf set
 								confs.add(con1);
 								confs.add(con2);
@@ -86,12 +91,16 @@ class VirtualMachine {
 								eo = new EvalObj(SignExc.Z);
 								con1.addEval(eo);
 								con1.increaseStepCount();
+								con1.setControlPoint(conf.getControlPoint());
 								//Case ERR
 								con2 = new Configuration(conf);
 								eo = new EvalObj(SignExc.ERR_A);
 								con2.addEval(eo);
 								con2.increaseStepCount();
 								con2.getState().setExceptionalState(true);
+								branchCount = conf.getBranch()+1;
+								con2.setBranch(branchCount);
+								con2.setControlPoint(conf.getControlPoint());
 								//Add both to conf set
 								confs.add(con1);
 								confs.add(con2);
@@ -132,12 +141,16 @@ class VirtualMachine {
 								eo = new EvalObj(SignExc.Z);
 								con1.addEval(eo);
 								con1.increaseStepCount();
+								con1.setControlPoint(conf.getControlPoint());
 								//Case ERR
 								con2 = new Configuration(conf);
 								eo = new EvalObj(SignExc.ERR_A);
 								con2.addEval(eo);
 								con2.increaseStepCount();
 								con2.getState().setExceptionalState(true);
+								branchCount = conf.getBranch()+1;
+								con2.setBranch(branchCount);
+								con2.setControlPoint(conf.getControlPoint());
 								//Add both to conf set
 								confs.add(con1);
 								confs.add(con2);
@@ -178,11 +191,15 @@ class VirtualMachine {
 								eo = new EvalObj(SignExc.Z);
 								con1.addEval(eo);
 								con1.increaseStepCount();
+								con1.setControlPoint(conf.getControlPoint());
 								//Case ERR
 								con2 = new Configuration(conf);
 								eo = new EvalObj(SignExc.ERR_A);
 								con2.addEval(eo);
 								con2.increaseStepCount();
+								branchCount = conf.getBranch()+1;
+								con2.setBranch(branchCount);
+								con2.setControlPoint(conf.getControlPoint());
 								//Add both to conf set
 								confs.add(con1);
 								confs.add(con2);
@@ -222,12 +239,16 @@ class VirtualMachine {
 								eo = new EvalObj(TTExc.T);
 								con1.addEval(eo);
 								con1.increaseStepCount();
+								con1.setControlPoint(conf.getControlPoint());
 								//Case ERR
 								con2 = new Configuration(conf);
 								eo = new EvalObj(TTExc.ERR_B);
 								con2.addEval(eo);
 								con2.increaseStepCount();
 								con2.getState().setExceptionalState(true);
+								branchCount = conf.getBranch()+1;
+								con2.setBranch(branchCount);
+								con2.setControlPoint(conf.getControlPoint());
 								//Add both to conf set
 								confs.add(con1);
 								confs.add(con2);
@@ -268,12 +289,16 @@ class VirtualMachine {
 								eo = new EvalObj(TTExc.T);
 								con1.addEval(eo);
 								con1.increaseStepCount();
+								con1.setControlPoint(conf.getControlPoint());
 								//Case ERR
 								con2 = new Configuration(conf);
 								eo = new EvalObj(TTExc.ERR_B);
 								con2.addEval(eo);
 								con2.increaseStepCount();
 								con2.getState().setExceptionalState(true);
+								branchCount = conf.getBranch()+1;
+								con2.setBranch(branchCount);
+								con2.setControlPoint(conf.getControlPoint());
 								//Add both to conf set
 								confs.add(con1);
 								confs.add(con2);
@@ -314,12 +339,16 @@ class VirtualMachine {
 								eo = new EvalObj(TTExc.T);
 								con1.addEval(eo);
 								con1.increaseStepCount();
+								con1.setControlPoint(conf.getControlPoint());
 								//Case ERR
 								con2 = new Configuration(conf);
 								eo = new EvalObj(TTExc.ERR_B);
 								con2.addEval(eo);
 								con2.increaseStepCount();
 								con2.getState().setExceptionalState(true);
+								branchCount = conf.getBranch()+1;
+								con2.setBranch(branchCount);
+								con2.setControlPoint(conf.getControlPoint());
 								//Add both to conf set
 								confs.add(con1);
 								confs.add(con2);
@@ -374,12 +403,16 @@ class VirtualMachine {
 								eo = new EvalObj(TTExc.T);
 								con1.addEval(eo);
 								con1.increaseStepCount();
+								con1.setControlPoint(conf.getControlPoint());
 								//Case ERR
 								con2 = new Configuration(conf);
 								eo = new EvalObj(TTExc.ERR_B);
 								con2.addEval(eo);
 								con2.increaseStepCount();
 								con2.getState().setExceptionalState(true);
+								branchCount = conf.getBranch()+1;
+								con2.setBranch(branchCount);
+								con2.setControlPoint(conf.getControlPoint());
 								//Add both to conf set
 								confs.add(con1);
 								confs.add(con2);
@@ -449,11 +482,15 @@ class VirtualMachine {
 							con1 = new Configuration(conf);
 							con1.addStorage(x, SignExc.Z);
 							con1.increaseStepCount();
+							con1.setControlPoint(conf.getControlPoint());
 							//Case ERR
 							con2 = new Configuration(conf);
 							con2.addStorage(x, SignExc.ERR_A);
 							con2.increaseStepCount();
 							con2.getState().setExceptionalState(true);
+							branchCount = conf.getBranch()+1;
+							con2.setBranch(branchCount);
+							con2.setControlPoint(conf.getControlPoint());
 							//Add both to conf set
 							confs.add(con1);
 							confs.add(con2);
@@ -502,11 +539,13 @@ class VirtualMachine {
 								con1 = new Configuration(conf);
 								con1.addCode(b.c1);
 								con1.increaseStepCount();
+								con1.setControlPoint(conf.getControlPoint());
 								//Case FF
 								con2 = new Configuration(conf);
 								con2.addCode(b.c2);
 								con2.increaseStepCount();
-								con2.setBranch(conf.getBranch()+1);
+								branchCount = conf.getBranch()+1;
+								con2.setBranch(branchCount);
 								con2.setControlPoint(conf.getControlPoint());
 								//Add both to conf set
 								confs.add(con1);
@@ -527,10 +566,15 @@ class VirtualMachine {
 								con1 = new Configuration(conf);
 								con1.addCode(b.c1);
 								con1.increaseStepCount();
+								con1.setControlPoint(conf.getControlPoint());
 								//Case FF
 								con2 = new Configuration(conf);
 								con2.addCode(b.c2);
 								con2.increaseStepCount();
+								branchCount = conf.getBranch();
+								branchCount = conf.getBranch()+1;
+								con2.setBranch(branchCount);
+								con2.setControlPoint(conf.getControlPoint());							
 								//Add both to conf set
 								confs.add(con1);
 								confs.add(con2);
@@ -538,6 +582,9 @@ class VirtualMachine {
 								con3 = new Configuration(conf);
 								con3.getState().setExceptionalState(true);
 								con3.increaseStepCount();
+								branchCount = conf.getBranch()+1;
+								con3.setBranch(branchCount);
+								con3.setControlPoint(conf.getControlPoint());
 								//Add all to confs set
 								confs.add(con1);
 								confs.add(con2);
