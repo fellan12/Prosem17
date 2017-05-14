@@ -2,8 +2,10 @@ package semant;
 
 import semant.amsyntax.*;
 import semant.whilesyntax.*;
+import java.util.*;
 
 public class CompileVisitor implements WhileVisitor {
+    HashMap<Integer, Stm> stms = new HashMap<Integer, Stm>(); 
 
     Boolean bugger = true;
     public void debug(String str) {
@@ -36,6 +38,7 @@ public class CompileVisitor implements WhileVisitor {
     
     public Code visit(Assignment assignment) {
         assignment.controlPoint = ccounter;
+        stms.put(ccounter,assignment);
         ccounter++;
         debug(assignment.controlPoint + " ass");
         Code c = new Code();
@@ -50,6 +53,7 @@ public class CompileVisitor implements WhileVisitor {
     
     public Code visit(Conditional conditional) {
         conditional.controlPoint = ccounter;
+        stms.put(ccounter,conditional);
         ccounter++;
         debug(conditional.controlPoint + " ifelse");
         Code c = new Code();
@@ -112,6 +116,7 @@ public class CompileVisitor implements WhileVisitor {
 
     public Code visit(Skip skip) {
         skip.controlPoint = ccounter;
+        stms.put(ccounter, skip);
         ccounter++;
         debug(skip.controlPoint + " skip");
         Code c = new Code();
@@ -145,6 +150,7 @@ public class CompileVisitor implements WhileVisitor {
 
     public Code visit(While whyle) {
         whyle.controlPoint = ccounter;
+        stms.put(ccounter, whyle);
         ccounter++;
         debug(whyle.controlPoint + " while");
         Code c = new Code();
@@ -163,6 +169,7 @@ public class CompileVisitor implements WhileVisitor {
     
     public Code visit(TryCatch trycatch) {
         trycatch.controlPoint = ccounter;
+        stms.put(ccounter,trycatch);
         ccounter++;
         debug(trycatch.controlPoint + " trycatch");
         Code c = new Code();
@@ -184,5 +191,9 @@ public class CompileVisitor implements WhileVisitor {
         c.addAll(div.a1.accept(this));
         c.add(new Div());
         return c;
+    }
+
+    public HashMap<Integer,Stm> getStmMap(){
+        return stms;
     }
 }

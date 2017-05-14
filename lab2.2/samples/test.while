@@ -1,6 +1,6 @@
 f := 1;
 x := 2;
 z := 1-2;
-if (true)
+if (z = 1)
 then f := 10
 else f := 0-1

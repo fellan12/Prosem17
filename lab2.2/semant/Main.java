@@ -30,12 +30,15 @@ public class Main {
 	public static void main(String[] args) throws Exception {
 		// - Compile s into AM Code
 		Stm s = WhileParser.parse(args[0]); 
-		Code y = s.accept(new CompileVisitor());
-			
+		CompileVisitor comVisit = new CompileVisitor();
+		Code y = s.accept(comVisit);
+
+		HashMap<Integer,Stm> stmMap = comVisit.getStmMap();
+		
+
 		//Collect all variables
 		HashSet<String> vars = new HashSet<String>();
 		for (Inst i : y) {
-			System.out.println(i.getControlPoint() + " " + i);
 			switch(i.opcode){
 				case STORE:
 					Store str = (Store) i;
@@ -48,17 +51,14 @@ public class Main {
 			}
 		}
 
-		//Add inputed variables if wanted
+		//Set inputed variables to Z
 		Configuration conf = new Configuration(y);
 		ArrayList<String> vars2 = new ArrayList<String>(vars);
-		System.out.println("Do you want to assign values to the varaibles? ");
-		System.out.println("Press enter to skip to the next variable");
-		if(pressKeyToContinue()){
-			Scanner scan = new Scanner(System.in);
-			for (int i = 0; i < vars.size() ; i++ ) {
-				conf.addStorage(vars2.get(i), SignExc.Z);
-			}
+		for (int i = 0; i < vars.size() ; i++ ) {
+			conf.addStorage(vars2.get(i), SignExc.Z);
 		}
+
+			
 
 		int exitPoint = 0;
 		for (Inst i : y){
@@ -120,9 +120,14 @@ public class Main {
   			System.out.println();
   		}
 
-  		Scanner reader = new Scanner(new File(args[0]));
-  		while(reader.hasNext()){
-  			System.out.println(reader.nextLine());
+  		
+
+
+  		//PrettyPrinter
+  		for (Integer i : stmMap.keySet()) {
+  			PrettyPrinter p = new PrettyPrinter();
+  			stmMap.get(i).accept(p);
   		}
+
 	}
 }
