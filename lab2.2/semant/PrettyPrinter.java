@@ -1,11 +1,49 @@
 package semant;
 
-import semant.amsyntax.Code;
+import semant.amsyntax.*;
 import semant.whilesyntax.*;
+import semant.signexc.*;
+import java.util.*;
 
 public class PrettyPrinter implements WhileVisitor {
     
     String i = "";
+    HashMap<Integer, ArrayList<Configuration>> confMap = Main.configMap; 
+
+    public String calcLub(ArrayList<Configuration> arr) {
+        
+        HashMap<String, SignExc> val1 = arr.get(0).getStorage();
+        SignExcLattice signLat = new SignExcLattice();
+        for (int i = 0; i < arr.size(); i++) {
+            if(arr.get(i).getState().getExceptionalState() || arr.get(i).peekInst().opcode == Inst.Opcode.CATCH){
+                arr.remove(i);
+            }else if (arr.get(i).peekInst().opcode == Inst.Opcode.LOOP){
+                return printLub(arr.get(i).getStorage());
+            }
+        }
+
+        for(int k = 2; k <= arr.size(); k++) {
+            HashMap<String, SignExc> val2 = arr.get(k-1).getStorage();
+                for (String key : val1.keySet()) {
+                    SignExc v1 = val1.get(key);
+                    SignExc v2 = val2.get(key);
+                    val2.put(key, signLat.lub(v1, v2));
+                }
+                val1 = val2;
+        }
+        return printLub(val1);
+       
+    }
+
+    private String printLub(HashMap<String, SignExc> val1){
+         StringBuilder sb = new StringBuilder();
+        sb.append("{");
+        for (String s : val1.keySet()) {
+            sb.append(s + "=" + val1.get(s) + ",");
+        }
+        String res = sb.toString().substring(0,sb.toString().length()-1) + "}";
+        return res;
+    }
     
     public Code visit(Conjunction and) {
         and.b1.accept(this);
@@ -15,8 +53,17 @@ public class PrettyPrinter implements WhileVisitor {
     }
     
     public Code visit(Assignment assignment) {
-        System.out.println();
-        System.out.print(i);
+        System.out.println(i);
+        if (!assignment.unReachable){
+            System.out.print(calcLub(confMap.get(assignment.controlPoint)) + " rhs:" + assignment.intSign);
+            if(assignment.intSign == SignExc.ANY_A){
+                System.out.println(" (Possible exception raiser!)");
+            }else{
+                System.out.println();
+            }
+        }else{
+            System.out.println("(Unreachable code)");
+        }
         assignment.x.accept(this);
         System.out.print(" := ");
         assignment.a.accept(this);
@@ -32,6 +79,11 @@ public class PrettyPrinter implements WhileVisitor {
     
     public Code visit(Conditional conditional) {
         System.out.println();
+        if (!conditional.unReachable){
+            System.out.println(calcLub(confMap.get(conditional.controlPoint)));
+        }else{
+            System.out.println("(Non reachable code)");
+        }        
         System.out.print(i + "if ");
         conditional.b.accept(this);
         System.out.print(" then");
@@ -122,7 +174,11 @@ public class PrettyPrinter implements WhileVisitor {
     
     public Code visit(While whyle) {
         System.out.println();
-        System.out.print(i + "while ");
+        if (!whyle.unReachable){
+            System.out.println(calcLub(confMap.get(whyle.controlPoint)));
+        }else{
+            System.out.println("(Non reachable code)");
+        }          System.out.print(i + "while ");
         whyle.b.accept(this);
         System.out.print(" do");
         indent();
@@ -142,7 +198,11 @@ public class PrettyPrinter implements WhileVisitor {
 
     public Code visit(TryCatch trycatch) {
         System.out.println();
-        System.out.print(i + "try");
+        if (!trycatch.unReachable){
+            System.out.println(calcLub(confMap.get(trycatch.controlPoint)));
+        }else{
+            System.out.println("(Non reachable code)");
+        }         System.out.print(i + "try");
         indent();
         trycatch.s1.accept(this);
         outdent();

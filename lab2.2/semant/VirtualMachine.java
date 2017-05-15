@@ -17,14 +17,17 @@ class VirtualMachine {
 	*/
 	public Set<Configuration> step(Configuration conf) throws CloneNotSupportedException{
 		Set<Configuration> confs = new HashSet<Configuration>();
+		HashMap<Integer,Stm> sMap = Main.stmMap;
+		SignExcLattice sLattice = new SignExcLattice();
+		TTExcLattice tLattice = new TTExcLattice();
 		if(conf.hasNext()){
 			EvalObj eo;
 			SignExc a1, a2, n;
 			Code c1,c2;
 			Configuration con1,con2,con3;
-			System.out.println("ControlPoint: " + conf.getControlPoint());
 			if(!conf.getState().getExceptionalState()){
 				SignExcOps ops = new SignExcOps();
+				System.out.println(conf.peekInst().opcode);
 				switch(conf.peekInst().opcode){
 					case ADD:
 						//consume
@@ -472,33 +475,43 @@ class VirtualMachine {
 						Store s = (Store) conf.getInst();
 						// Get value from eval stack
 						n = conf.getEval().getSign();
+						// Add value to Stm object for pretty printer
+						System.out.println("cp: " + s.getControlPoint());
+						Assignment ass = (Assignment) sMap.get(s.getControlPoint());
+						ass.intSign = sLattice.lub(ass.intSign,n);
+						ass.visited = true;
 						// Get variable from store instruction
 						String x = s.x;
 						// Add mapping to storage
-						if(n == SignExc.ERR_A){
-							conf.getState().setExceptionalState(true);
-						}else if(n == SignExc.ANY_A){
-							//Case Z
-							con1 = new Configuration(conf);
-							con1.addStorage(x, SignExc.Z);
-							con1.increaseStepCount();
-							con1.setControlPoint(conf.getControlPoint());
-							//Case ERR
-							con2 = new Configuration(conf);
-							con2.addStorage(x, SignExc.ERR_A);
-							con2.increaseStepCount();
-							con2.getState().setExceptionalState(true);
-							branchCount = conf.getBranch()+1;
-							con2.setBranch(branchCount);
-							con2.setControlPoint(conf.getControlPoint());
-							//Add both to conf set
-							confs.add(con1);
-							confs.add(con2);
-							return confs;
-						}else{
-							conf.addStorage(x, n);
-							break;	
+						switch(n){
+							case ERR_A:
+								conf.getState().setExceptionalState(true);
+								break;
+							case ANY_A:
+								ass.possibleExceptionRaiser = true;
+								System.out.println("ANY CASE!!!!!");
+								//Case Z
+								con1 = new Configuration(conf);
+								con1.addStorage(x, SignExc.Z);
+								con1.increaseStepCount();
+								con1.setControlPoint(conf.getControlPoint());
+								//Case ERR
+								con2 = new Configuration(conf);
+								con2.addStorage(x, SignExc.ERR_A);
+								con2.increaseStepCount();
+								con2.getState().setExceptionalState(true);
+								branchCount = conf.getBranch()+1;
+								con2.setBranch(branchCount);
+								con2.setControlPoint(conf.getControlPoint());
+								//Add both to conf set
+								confs.add(con1);
+								confs.add(con2);
+								return confs;
+							default:
+								conf.addStorage(x, n);
+								break;
 						}
+						break;
 											
 
 
@@ -510,22 +523,43 @@ class VirtualMachine {
 						c1.add(l);
 						c2 = new Code();
 						c2.add(new Noop());
+						for (Inst i : c2) {
+							i.stmControlPoint = l.getControlPoint();
+						}
+						//System.out.println("cp1: " + l.getControlPoint());
 						Branch br = new Branch(c1, c2);
 						// Add branch code to code stack
 						Code c3 = new Code();
 						c3.add(br);
+						for (Inst i : c3) {
+							i.stmControlPoint = l.getControlPoint();
+						}
 						conf.addCode(c3);
 						conf.addCode(l.c1);
 						break;
 
 					
-					//TODO HANTERA FÖR ANY KONCEPT					
 					case BRANCH:
 						Branch b = (Branch) conf.getInst();
 						// Pop stack to see tt or ff
 						eo = conf.getEval();
+						TTExc bool = eo.getTT();
 
-						switch(eo.getTT()){
+						try {
+							System.out.println(b.getControlPoint());
+							Conditional con = (Conditional) sMap.get(b.getControlPoint());
+							TTExc conlub = con.ttSign;
+							conlub = tLattice.lub(con.ttSign, bool);
+							//con.visited = true;
+						} catch (ClassCastException e) {
+							System.out.println(b.getControlPoint());
+							While whl = (While) sMap.get(b.getControlPoint());
+							TTExc whllub = whl.ttSign;
+							whllub = tLattice.lub(whl.ttSign, bool);
+							//.visited = true;
+						}
+						
+						switch(bool){
 							case TT:
 								conf.addCode(b.c1);
 								break;
@@ -561,6 +595,8 @@ class VirtualMachine {
 								break;
 
 							case ANY_B:
+								Conditional con = (Conditional) sMap.get(b.getControlPoint());
+								con.possibleExceptionRaiser = true;
 								//Case T
 								//Case TT
 								con1 = new Configuration(conf);
@@ -575,9 +611,6 @@ class VirtualMachine {
 								branchCount = conf.getBranch()+1;
 								con2.setBranch(branchCount);
 								con2.setControlPoint(conf.getControlPoint());							
-								//Add both to conf set
-								confs.add(con1);
-								confs.add(con2);
 								//Case ERR_B
 								con3 = new Configuration(conf);
 								con3.getState().setExceptionalState(true);
@@ -595,9 +628,14 @@ class VirtualMachine {
 
 
 					case TRYC:
+						// Consume inst.
 						TryC tc = (TryC) conf.getInst();
+						// Set visited
+						TryCatch trc = (TryCatch) sMap.get(tc.getControlPoint());
+						trc.visited = true;
 						c1 = tc.c1;
 						Catch cat = new Catch(tc.c2);
+						cat.stmControlPoint = tc.getControlPoint();
 						c1.add(cat);
 						conf.addCode(c1);
 						break;
@@ -605,11 +643,13 @@ class VirtualMachine {
 
 					case CATCH:
 						conf.getInst();
+						break;
 
 
 					case NOOP:
-						//consume
-						conf.getInst();
+						//consume inst and set visited.
+						Noop np = (Noop) conf.getInst();
+
 						// Do nothing.
 						break;
 				}
@@ -622,6 +662,7 @@ class VirtualMachine {
 					conf.getState().setExceptionalState(false);
 				}
 				else {
+					System.out.println("Skipped: Exceptional State");
 					conf.getEvalStack().clear();
 					conf.getInst();
 

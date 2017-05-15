@@ -45,12 +45,49 @@ class State implements Cloneable{
         return super.clone();
     }
 
-    public int hashCode(){
-    	return storage.size();
+    public int shashCode(){
+    	int hashcode = 0;
+    	int weight = 1;
+    	for (String s : storage.keySet()) {
+    		switch(storage.get(s)){
+    			case NONE_A: 
+    				hashcode += 1*weight;
+    				break;
+    			case NEG: 
+    				hashcode += 2*weight;
+    				break;
+    			case ZERO: 
+    				hashcode += 3*weight;
+    				break;
+    			case POS: 
+    				hashcode += 4*weight;
+    				break;
+    			case ERR_A: 
+    				hashcode += 5*weight;
+    				break;
+    			case NON_POS: 
+    				hashcode += 6*weight;
+    				break;
+    			case NON_ZERO: 
+    				hashcode += 7*weight;
+    				break;
+    			case NON_NEG: 
+    				hashcode += 8*weight;
+    				break;
+    			case Z: 
+    				hashcode += 9*weight;
+    				break;
+    			case ANY_A: 
+    				hashcode += 10*weight;
+    				break;
+    		}
+    		weight *= 10;
+    	}
+    	return hashcode;
     }
 
-    public boolean equal(State s) {
-
+    public boolean equal(Object o) {
+    	State s = (State) o;
 	    try{
 	        for (String k : storage.keySet())
 	        {

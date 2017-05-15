@@ -6,6 +6,7 @@ import java.util.*;
 
 public class CompileVisitor implements WhileVisitor {
     HashMap<Integer, Stm> stms = new HashMap<Integer, Stm>(); 
+    ArrayList<Integer> controlPoints = new ArrayList<Integer>();
 
     Boolean bugger = true;
     public void debug(String str) {
@@ -39,6 +40,7 @@ public class CompileVisitor implements WhileVisitor {
     public Code visit(Assignment assignment) {
         assignment.controlPoint = ccounter;
         stms.put(ccounter,assignment);
+        controlPoints.add(ccounter);
         ccounter++;
         debug(assignment.controlPoint + " ass");
         Code c = new Code();
@@ -54,10 +56,11 @@ public class CompileVisitor implements WhileVisitor {
     public Code visit(Conditional conditional) {
         conditional.controlPoint = ccounter;
         stms.put(ccounter,conditional);
+        controlPoints.add(ccounter);
         ccounter++;
         debug(conditional.controlPoint + " ifelse");
         Code c = new Code();
-        c.addAll(conditional.b.accept(this));
+        c.addAll(conditional.b.accept(this)); 
         Code c1 = new Code();
         c1.addAll(conditional.s1.accept(this));
         Code c2 = new Code();
@@ -117,6 +120,7 @@ public class CompileVisitor implements WhileVisitor {
     public Code visit(Skip skip) {
         skip.controlPoint = ccounter;
         stms.put(ccounter, skip);
+        controlPoints.add(ccounter);
         ccounter++;
         debug(skip.controlPoint + " skip");
         Code c = new Code();
@@ -151,11 +155,16 @@ public class CompileVisitor implements WhileVisitor {
     public Code visit(While whyle) {
         whyle.controlPoint = ccounter;
         stms.put(ccounter, whyle);
+        controlPoints.add(ccounter);
         ccounter++;
         debug(whyle.controlPoint + " while");
         Code c = new Code();
         Code c1 = new Code();
         c1.addAll(whyle.b.accept(this));
+        for (Inst i : c1) {
+            i.stmControlPoint = whyle.controlPoint;
+            debug(i.stmControlPoint + " " + i.opcode);
+        }
         Code c2 = new Code();
         c2.addAll(whyle.s.accept(this));
         c.add(new Loop(c1,c2));
@@ -170,6 +179,7 @@ public class CompileVisitor implements WhileVisitor {
     public Code visit(TryCatch trycatch) {
         trycatch.controlPoint = ccounter;
         stms.put(ccounter,trycatch);
+        controlPoints.add(ccounter);
         ccounter++;
         debug(trycatch.controlPoint + " trycatch");
         Code c = new Code();
@@ -195,5 +205,9 @@ public class CompileVisitor implements WhileVisitor {
 
     public HashMap<Integer,Stm> getStmMap(){
         return stms;
+    }
+
+    public ArrayList<Integer> getControlPoints(){
+        return controlPoints;
     }
 }

@@ -44,7 +44,21 @@ class Configuration {
 	}
 
 	public int hashCode(){
-		return c.hashCode() ^ e.hashCode() ^ s.hashCode();
+		/*
+		System.out.println("C hash: " + c.hashCode());
+		System.out.println("E hash: " + e.hashCode());
+		System.out.println("S hash: " + s.shashCode());
+		System.out.println("TOTAL hash: " + (c.hashCode() ^ e.hashCode() ^ s.shashCode()));
+		*/
+		return c.hashCode() ^ e.hashCode() ^ s.shashCode();
+	}
+
+
+	public boolean equals(Object o) {
+	if (!(o instanceof Configuration))
+		return false;
+		Configuration oc = (Configuration) o;
+		return oc.c.equals(c) && oc.e.equals(e) && oc.s.equals(s);
 	}
 
 	public String getBranchString(){
@@ -171,6 +185,17 @@ class Configuration {
 		return e.equals(conf.getEvalStack()) && s.equals(conf.getState());
 	}
 
+	public String printEvalStack(){
+		String evalString = "";
+		if(!e.isEmpty()){
+			for (EvalObj eo: e) {
+				evalString = eo.printObj() + ":" + evalString;
+			}
+			evalString = evalString.substring(0, evalString.length()-1);			
+		}
+		return evalString;
+	}
+
 	/*
 	* Prints out configuration and step count
 	*/
@@ -179,7 +204,8 @@ class Configuration {
 		String evalString = "ε";
 		String storageString = "ε";
 	
-		System.out.println("Step: " + stepCount +"\n");
+		System.out.println("Step: " + getStepCount());
+		System.out.println("Controlpoint: " + getControlPoint() + "\n");
 
 		if(!c.isEmpty()){
 			codeString = "";

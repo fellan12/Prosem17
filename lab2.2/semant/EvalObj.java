@@ -41,8 +41,11 @@ class EvalObj {
 		return printString;
 	}
 
-	public boolean equals(EvalObj o){
-		return intVal==o.getSign() && boolVal == o.getTT();
+	public boolean equals(Object o) {
+		if (!(o instanceof EvalObj))
+			return false;
+		EvalObj oc = (EvalObj) o;
+		return oc.intVal == intVal && oc.boolVal == boolVal;
 	}
 
 }

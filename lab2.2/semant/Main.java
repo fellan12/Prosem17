@@ -9,6 +9,10 @@ import java.io.*;
 public class Main {
 	public static final String ANSI_GREEN = "\u001B[32m";
 	public static final String ANSI_RESET = "\u001B[0m";
+	public static HashMap<Integer,Stm> stmMap;
+	public static ArrayList<Integer> controlPointList;
+	public static HashMap<Integer, ArrayList<Configuration>> configMap = new HashMap<Integer, ArrayList<Configuration>>();
+
 
 	private static boolean pressKeyToContinue(){ 
 
@@ -33,8 +37,8 @@ public class Main {
 		CompileVisitor comVisit = new CompileVisitor();
 		Code y = s.accept(comVisit);
 
-		HashMap<Integer,Stm> stmMap = comVisit.getStmMap();
-		
+		stmMap = comVisit.getStmMap();
+		controlPointList = comVisit.getControlPoints	();		
 
 		//Collect all variables
 		HashSet<String> vars = new HashSet<String>();
@@ -53,7 +57,9 @@ public class Main {
 
 		//Set inputed variables to Z
 		Configuration conf = new Configuration(y);
+		//System.out.println("start" + conf.getControlPoint());
 		ArrayList<String> vars2 = new ArrayList<String>(vars);
+		System.out.println("Settting variables to Z");
 		for (int i = 0; i < vars.size() ; i++ ) {
 			conf.addStorage(vars2.get(i), SignExc.Z);
 		}
@@ -82,6 +88,7 @@ public class Main {
   		stepConfs.add(conf);
   		while(!stepConfs.isEmpty()){
   			for (Configuration con : stepConfs) {
+  				System.out.println("VISITED CONTAINS : "+ con.hashCode() + " == " + visitedConfs.contains(con.hashCode()));
   				if(!visitedConfs.contains(con.hashCode())){
   					//Current configs to compute
 	  				System.out.println("Configuration Set Size: " + stepConfs.size());
@@ -91,14 +98,14 @@ public class Main {
 		 			if(steps){
 		 				steps = pressKeyToContinue();
 		 			}
+  					System.out.println("VISITED ADDED : "+ con.hashCode());
 		 			visitedConfs.add(con.hashCode());
+		 			//System.out.println("VISITED CONTAINS: " + visitedConfs);
 		 			confsGraph.add(new Configuration(con));
 		  			newConfs.addAll(VM.step(con));
 
 	  				
   				}else{
-  					confsGraph.add(new Configuration(con));
-  					visitedConfs.add(con.hashCode());
   					continue;
   				}
   				
@@ -110,24 +117,85 @@ public class Main {
   			System.out.println("#######################################################################################################################################");
   		}
 
-  		confsGraph.removeIf(c -> c.getControlPoint() == 0);
   		for (Configuration c : confsGraph) {
-  			if(c.getControlPoint() > exitPoint){
-  				c.setControlPoint(-1);
+  			if(c.getCode().size() == 0){
+  				c.setControlPoint(-2);
   			}
   			System.out.println(c.getBranchString() + " (" + c.getControlPoint() + ") " + c.getCode());
-  			System.out.println(c.getState().printState());  
+  			System.out.println(c.printEvalStack());
+  			System.out.println(c.getState().printState());
+  			System.out.println("State: " + c.getState().getExceptionalState());
+  			System.out.println("hashcode: " + c.hashCode());
   			System.out.println();
   		}
 
-  		
 
-
-  		//PrettyPrinter
-  		for (Integer i : stmMap.keySet()) {
-  			PrettyPrinter p = new PrettyPrinter();
-  			stmMap.get(i).accept(p);
+  		//ArrayList<ArrayList<Configuration>> res = new ArrayList<ArrayList<Configuration>>();
+  		// calculate lub
+  		for (Configuration c : confsGraph) {
+  			if(configMap.get(c.getControlPoint()) == null){
+  				configMap.put(c.getControlPoint(), new ArrayList<Configuration>());
+  				//System.out.println("Added "+c.getControlPoint()+ " - " +c.getCode());
+  				configMap.get(c.getControlPoint()).add(c);	
+  			}else{
+  				//System.out.println("Added "+c.getControlPoint()+ " - " +c.getCode());
+  				configMap.get(c.getControlPoint()).add(c);	
+  			}
   		}
 
+
+  		// find unreachable code
+  		boolean noPoint = false;
+  		for (Integer i : controlPointList) {
+  			for(Configuration c : confsGraph){
+  				if(i == c.getControlPoint()){
+  					noPoint = true;
+  				}
+  			}
+  			if(!noPoint){
+  				stmMap.get(i).unReachable = true;
+  			}
+  			noPoint = false;
+  		}
+
+  		// find exceptionraiser
+  	
+  		
+  	  	//Final lub
+  	  	try{
+	  	  	SignExcLattice signLat = new SignExcLattice();
+	 		ArrayList<Configuration> lastConfs = configMap.get(-1);
+			HashMap<String, SignExc> val1 = lastConfs.get(0).getStorage();
+			for(int k = 2; k <= lastConfs.size(); k++) {
+				HashMap<String, SignExc> val2 = lastConfs.get(k-1).getStorage();
+
+				for (String key : val1.keySet()) {
+					SignExc v1 = val1.get(key);
+					SignExc v2 = val2.get(key);
+					val2.put(key, signLat.lub(v1, v2));
+				}
+				val1 = val2;
+			}
+
+			//PrettyPrint
+	 		PrettyPrinter p = new PrettyPrinter();
+	  	  	s.accept(p);
+
+			StringBuilder sb = new StringBuilder();
+	 		sb.append("{");
+	 		for (String str : val1.keySet()) {
+	 			 sb.append(str + "=" + val1.get(str) + ",");
+	 		}
+	 		String res = sb.toString().substring(0,sb.toString().length()-1);
+	 		System.out.println("\n"+ res + "} (normal termination)");
+		}catch(NullPointerException e){
+			//PrettyPrint
+	 		PrettyPrinter p = new PrettyPrinter();
+	  	  	s.accept(p);
+
+	  	  	System.out.println("\n(Infinite Loop)");
+		}
+
+		
 	}
 }

@@ -9,7 +9,7 @@ public class While extends Stm {
 
     public final Bexp b;
     public final Stm s;
-    public TTExc ttSign;
+    public TTExc ttSign = TTExc.NONE_B;
     
     public While(Bexp b, Stm s) {
         this.b = b;
