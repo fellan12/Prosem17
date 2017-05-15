@@ -656,16 +656,18 @@ class VirtualMachine {
 				
 			}else{	
 				//CATCH
-				if(conf.peekInst().opcode == Inst.Opcode.CATCH){
-					Catch cat = (Catch) conf.getInst();
-					conf.addCode(cat.c2);
-					conf.getState().setExceptionalState(false);
-				}
-				else {
-					System.out.println("Skipped: Exceptional State");
-					conf.getEvalStack().clear();
-					conf.getInst();
+				switch(conf.peekInst().opcode){
+					case CATCH:
+						Catch cat = (Catch) conf.getInst();
+						conf.addCode(cat.c2);
+						conf.getState().setExceptionalState(false);
+						break;
 
+					default:
+						System.out.println("Skipped Inst: Exceptional State");
+						conf.getEvalStack().clear();
+						conf.getInst();
+						break;
 				}
 			}
 			
