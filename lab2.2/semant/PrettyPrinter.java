@@ -66,7 +66,7 @@ public class PrettyPrinter implements WhileVisitor {
             if(assignment.intSign == SignExc.ANY_A){
                 System.out.println(ANSI_YELLOW+"   (Possible exception raiser!)"+ANSI_RESET);
             }else if(assignment.intSign == SignExc.ERR_A){
-                System.out.println(ANSI_RED +"   (Definitiv exception raiser!)" +ANSI_RESET);
+                System.out.println(ANSI_RED +"   (Assured exception raiser!)" +ANSI_RESET);
             }else{
                 System.out.println();
             }
@@ -188,7 +188,8 @@ public class PrettyPrinter implements WhileVisitor {
             System.out.println(calcLub(confMap.get(whyle.controlPoint)));
         }else{
             System.out.println(ANSI_RED+"   (Unreachable code)"+ANSI_RESET);
-        }          System.out.print(i + "while ");
+        }          
+        System.out.print(i + "while ");
         whyle.b.accept(this);
         System.out.print(" do");
         indent();

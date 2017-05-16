@@ -17,13 +17,13 @@ public class Main {
 
 	private static boolean pressKeyToContinue(){ 
 
-		System.out.println(ANSI_GREEN+ "Press enter key to continue or write 'skip' to go to the end or 'exit' to quit" + ANSI_RESET);
+		System.out.println(ANSI_GREEN+ "Press enter to step or write 'skip' to skip computation steps or 'quit' to quit" + ANSI_RESET);
 		try{
 			Scanner sc = new Scanner(System.in);
 			String str = sc.nextLine();
 			if(str.equals("skip")){
 				return false;
-			}else if(str.equals("exit")){
+			}else if(str.equals("quit")){
 				System.exit(0);
 			}
 		}  
@@ -86,6 +86,10 @@ public class Main {
   		List<Configuration> confsGraph = new ArrayList<Configuration>();
   		Set<Integer> visitedConfs = new HashSet<Integer>();
   		stepConfs.add(conf);
+  		if(steps){
+  			steps = pressKeyToContinue();
+  			System.out.println("####################################################################################################################");
+  		}
   		while(!stepConfs.isEmpty()){
   			for (Configuration con : stepConfs) {
   				if(!visitedConfs.contains(con.hashCode())){
@@ -95,8 +99,6 @@ public class Main {
 		  				//Configs that have no code left
 		  				System.out.println("Config Graph Set Size " + confsGraph.size());
 			 			con.printConfig();
-			 			System.out.println("#######################################################################################################################################");
-  						System.out.println("#######################################################################################################################################");
 		 				steps = pressKeyToContinue();
 		 			}
 		 			visitedConfs.add(con.hashCode());
@@ -108,6 +110,9 @@ public class Main {
   					continue;
   				}
   				
+  			}
+  			if(steps){
+  				System.out.println("####################################################################################################################");
   			}
   			stepConfs.clear();
   			stepConfs.addAll(newConfs);
@@ -159,13 +164,20 @@ public class Main {
 			HashMap<String, SignExc> val1 = lastConfs.get(0).getStorage();
 			for(int k = 2; k <= lastConfs.size(); k++) {
 				HashMap<String, SignExc> val2 = lastConfs.get(k-1).getStorage();
-
 				for (String key : val1.keySet()) {
 					SignExc v1 = val1.get(key);
 					SignExc v2 = val2.get(key);
 					val2.put(key, signLat.lub(v1, v2));
 				}
 				val1 = val2;
+			}
+
+			//Abnormal termination check
+			Boolean excep = true;
+			for (Configuration c : lastConfs) {
+				if(!c.getState().getExceptionalState()){
+					excep = false;
+				}
 			}
 
 			//PrettyPrint
@@ -178,7 +190,11 @@ public class Main {
 	 			 sb.append(str + "=" + val1.get(str) + ",");
 	 		}
 	 		String res = sb.toString().substring(0,sb.toString().length()-1);
-	 		System.out.println("\n"+ res + "}" + ANSI_GREEN + "    (normal termination)" + ANSI_RESET);
+	 		if(excep){
+	 			System.out.println("\n"+ res + "}" + ANSI_RED + "    (Abnormal termination)" + ANSI_RESET);
+	 		}else{
+	 			System.out.println("\n"+ res + "}" + ANSI_GREEN + "    (Normal termination)" + ANSI_RESET);
+	 		}
 
 		}catch(NullPointerException e){
 			//PrettyPrint
