@@ -8,7 +8,7 @@ public class CompileVisitor implements WhileVisitor {
     HashMap<Integer, Stm> stms = new HashMap<Integer, Stm>(); 
     ArrayList<Integer> controlPoints = new ArrayList<Integer>();
 
-    Boolean bugger = true;
+    Boolean bugger = false;
     public void debug(String str) {
         if (bugger)
             System.out.println(str);

@@ -27,7 +27,6 @@ class VirtualMachine {
 			Configuration con1,con2,con3;
 			if(!conf.getState().getExceptionalState()){
 				SignExcOps ops = new SignExcOps();
-				System.out.println(conf.peekInst().opcode);
 				switch(conf.peekInst().opcode){
 					case ADD:
 						//consume
@@ -50,7 +49,7 @@ class VirtualMachine {
 								eo = new EvalObj(SignExc.ERR_A);
 								con2.addEval(eo);
 								con2.increaseStepCount();
-								con2.getState().setExceptionalState(true);
+								//con2.getState().setExceptionalState(true);
 								branchCount = conf.getBranch()+1;
 								con2.setBranch(branchCount);
 								con2.setControlPoint(conf.getControlPoint());
@@ -60,7 +59,7 @@ class VirtualMachine {
 								return confs;
 
 							case ERR_A:
-								conf.getState().setExceptionalState(true);
+								//conf.getState().setExceptionalState(true);
 								eo = new EvalObj(SignExc.ERR_A);
 								conf.addEval(eo);
 								break;
@@ -100,7 +99,6 @@ class VirtualMachine {
 								eo = new EvalObj(SignExc.ERR_A);
 								con2.addEval(eo);
 								con2.increaseStepCount();
-								con2.getState().setExceptionalState(true);
 								branchCount = conf.getBranch()+1;
 								con2.setBranch(branchCount);
 								con2.setControlPoint(conf.getControlPoint());
@@ -110,7 +108,6 @@ class VirtualMachine {
 								return confs;
 
 							case ERR_A:
-								conf.getState().setExceptionalState(true);
 								eo = new EvalObj(SignExc.ERR_A);
 								conf.addEval(eo);
 								break;
@@ -150,7 +147,6 @@ class VirtualMachine {
 								eo = new EvalObj(SignExc.ERR_A);
 								con2.addEval(eo);
 								con2.increaseStepCount();
-								con2.getState().setExceptionalState(true);
 								branchCount = conf.getBranch()+1;
 								con2.setBranch(branchCount);
 								con2.setControlPoint(conf.getControlPoint());
@@ -160,7 +156,6 @@ class VirtualMachine {
 								return confs;
 
 							case ERR_A:
-								conf.getState().setExceptionalState(true);
 								eo = new EvalObj(SignExc.ERR_A);
 								conf.addEval(eo);
 								break;
@@ -476,7 +471,6 @@ class VirtualMachine {
 						// Get value from eval stack
 						n = conf.getEval().getSign();
 						// Add value to Stm object for pretty printer
-						System.out.println("cp: " + s.getControlPoint());
 						Assignment ass = (Assignment) sMap.get(s.getControlPoint());
 						ass.intSign = sLattice.lub(ass.intSign,n);
 						ass.visited = true;
@@ -489,7 +483,6 @@ class VirtualMachine {
 								break;
 							case ANY_A:
 								ass.possibleExceptionRaiser = true;
-								System.out.println("ANY CASE!!!!!");
 								//Case Z
 								con1 = new Configuration(conf);
 								con1.addStorage(x, SignExc.Z);
@@ -526,7 +519,6 @@ class VirtualMachine {
 						for (Inst i : c2) {
 							i.stmControlPoint = l.getControlPoint();
 						}
-						//System.out.println("cp1: " + l.getControlPoint());
 						Branch br = new Branch(c1, c2);
 						// Add branch code to code stack
 						Code c3 = new Code();
@@ -546,13 +538,11 @@ class VirtualMachine {
 						TTExc bool = eo.getTT();
 
 						try {
-							System.out.println(b.getControlPoint());
 							Conditional con = (Conditional) sMap.get(b.getControlPoint());
 							TTExc conlub = con.ttSign;
 							conlub = tLattice.lub(con.ttSign, bool);
 							//con.visited = true;
 						} catch (ClassCastException e) {
-							System.out.println(b.getControlPoint());
 							While whl = (While) sMap.get(b.getControlPoint());
 							TTExc whllub = whl.ttSign;
 							whllub = tLattice.lub(whl.ttSign, bool);
@@ -633,7 +623,8 @@ class VirtualMachine {
 						// Set visited
 						TryCatch trc = (TryCatch) sMap.get(tc.getControlPoint());
 						trc.visited = true;
-						c1 = tc.c1;
+						c1 = new Code();
+						c1.addAll(tc.c1);
 						Catch cat = new Catch(tc.c2);
 						cat.stmControlPoint = tc.getControlPoint();
 						c1.add(cat);
@@ -664,7 +655,6 @@ class VirtualMachine {
 						break;
 
 					default:
-						System.out.println("Skipped Inst: Exceptional State");
 						conf.getEvalStack().clear();
 						conf.getInst();
 						break;

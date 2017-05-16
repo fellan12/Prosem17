@@ -8,20 +8,27 @@ import java.util.*;
 public class PrettyPrinter implements WhileVisitor {
     
     String i = "";
-    HashMap<Integer, ArrayList<Configuration>> confMap = Main.configMap; 
+    HashMap<Integer, ArrayList<Configuration>> confMap = Main.configMap;
+    public static final String ANSI_GREEN = "\u001B[1;32m";
+    public static final String ANSI_RED = "\u001B[1;31m";
+    public static final String ANSI_YELLOW = "\u001B[1;33m";
+    public static final String ANSI_RESET = "\u001B[0m"; 
 
     public String calcLub(ArrayList<Configuration> arr) {
         
         HashMap<String, SignExc> val1 = arr.get(0).getStorage();
         SignExcLattice signLat = new SignExcLattice();
+        //Remove Catch for lub calc
+        arr.removeIf(c -> c.getState().getExceptionalState() || c.peekInst().opcode == Inst.Opcode.CATCH);
+        
+        //Special handle for Loop lub calc
         for (int i = 0; i < arr.size(); i++) {
-            if(arr.get(i).getState().getExceptionalState() || arr.get(i).peekInst().opcode == Inst.Opcode.CATCH){
-                arr.remove(i);
-            }else if (arr.get(i).peekInst().opcode == Inst.Opcode.LOOP){
+            if (arr.get(i).peekInst().opcode == Inst.Opcode.LOOP){
                 return printLub(arr.get(i).getStorage());
             }
         }
 
+        // Calc lub for general
         for(int k = 2; k <= arr.size(); k++) {
             HashMap<String, SignExc> val2 = arr.get(k-1).getStorage();
                 for (String key : val1.keySet()) {
@@ -55,14 +62,16 @@ public class PrettyPrinter implements WhileVisitor {
     public Code visit(Assignment assignment) {
         System.out.println(i);
         if (!assignment.unReachable){
-            System.out.print(calcLub(confMap.get(assignment.controlPoint)) + " rhs:" + assignment.intSign);
+            System.out.print(i + calcLub(confMap.get(assignment.controlPoint)) + "  rhs:" + assignment.intSign);
             if(assignment.intSign == SignExc.ANY_A){
-                System.out.println(" (Possible exception raiser!)");
+                System.out.println(ANSI_YELLOW+"   (Possible exception raiser!)"+ANSI_RESET);
+            }else if(assignment.intSign == SignExc.ERR_A){
+                System.out.println(ANSI_RED +"   (Definitiv exception raiser!)" +ANSI_RESET);
             }else{
                 System.out.println();
             }
         }else{
-            System.out.println("(Unreachable code)");
+            System.out.println("   (Unreachable code)");
         }
         assignment.x.accept(this);
         System.out.print(" := ");
@@ -82,7 +91,7 @@ public class PrettyPrinter implements WhileVisitor {
         if (!conditional.unReachable){
             System.out.println(calcLub(confMap.get(conditional.controlPoint)));
         }else{
-            System.out.println("(Non reachable code)");
+            System.out.println("   (Ureachable code)");
         }        
         System.out.print(i + "if ");
         conditional.b.accept(this);
@@ -168,7 +177,7 @@ public class PrettyPrinter implements WhileVisitor {
     }
     
     public Code visit(Var var) {
-        System.out.print(var.id);
+        System.out.print(i+var.id);
         return null;
     }
     
@@ -177,7 +186,7 @@ public class PrettyPrinter implements WhileVisitor {
         if (!whyle.unReachable){
             System.out.println(calcLub(confMap.get(whyle.controlPoint)));
         }else{
-            System.out.println("(Non reachable code)");
+            System.out.println("    (Ureachable code)");
         }          System.out.print(i + "while ");
         whyle.b.accept(this);
         System.out.print(" do");
@@ -201,8 +210,9 @@ public class PrettyPrinter implements WhileVisitor {
         if (!trycatch.unReachable){
             System.out.println(calcLub(confMap.get(trycatch.controlPoint)));
         }else{
-            System.out.println("(Non reachable code)");
-        }         System.out.print(i + "try");
+            System.out.println("    (Unreachable code)");
+        }         
+        System.out.print(i + "try");
         indent();
         trycatch.s1.accept(this);
         outdent();

@@ -7,7 +7,8 @@ import java.util.*;
 import java.io.*;
 
 public class Main {
-	public static final String ANSI_GREEN = "\u001B[32m";
+	public static final String ANSI_GREEN = "\u001B[1;32m";
+	public static final String ANSI_RED = "\u001B[1;31m";
 	public static final String ANSI_RESET = "\u001B[0m";
 	public static HashMap<Integer,Stm> stmMap;
 	public static ArrayList<Integer> controlPointList;
@@ -38,7 +39,7 @@ public class Main {
 		Code y = s.accept(comVisit);
 
 		stmMap = comVisit.getStmMap();
-		controlPointList = comVisit.getControlPoints	();		
+		controlPointList = comVisit.getControlPoints();		
 
 		//Collect all variables
 		HashSet<String> vars = new HashSet<String>();
@@ -59,7 +60,6 @@ public class Main {
 		Configuration conf = new Configuration(y);
 		//System.out.println("start" + conf.getControlPoint());
 		ArrayList<String> vars2 = new ArrayList<String>(vars);
-		System.out.println("Settting variables to Z");
 		for (int i = 0; i < vars.size() ; i++ ) {
 			conf.addStorage(vars2.get(i), SignExc.Z);
 		}
@@ -88,24 +88,23 @@ public class Main {
   		stepConfs.add(conf);
   		while(!stepConfs.isEmpty()){
   			for (Configuration con : stepConfs) {
-  				System.out.println("VISITED CONTAINS : "+ con.hashCode() + " == " + visitedConfs.contains(con.hashCode()));
   				if(!visitedConfs.contains(con.hashCode())){
-  					//Current configs to compute
-	  				System.out.println("Configuration Set Size: " + stepConfs.size());
-	  				//Configs that have no code left
-	  				System.out.println("Config Graph Set Size " + confsGraph.size());
-		 			con.printConfig();
-		 			if(steps){
+	  				if(steps){
+	  					//Current configs to compute
+		  				System.out.println("Configuration Set Size: " + stepConfs.size());
+		  				//Configs that have no code left
+		  				System.out.println("Config Graph Set Size " + confsGraph.size());
+			 			con.printConfig();
+			 			System.out.println("#######################################################################################################################################");
+  						System.out.println("#######################################################################################################################################");
 		 				steps = pressKeyToContinue();
 		 			}
-  					System.out.println("VISITED ADDED : "+ con.hashCode());
 		 			visitedConfs.add(con.hashCode());
-		 			//System.out.println("VISITED CONTAINS: " + visitedConfs);
-		 			confsGraph.add(new Configuration(con));
+  					confsGraph.add(new Configuration(con));
 		  			newConfs.addAll(VM.step(con));
-
-	  				
   				}else{
+  					visitedConfs.add(con.hashCode());
+  					confsGraph.add(new Configuration(con));
   					continue;
   				}
   				
@@ -113,21 +112,16 @@ public class Main {
   			stepConfs.clear();
   			stepConfs.addAll(newConfs);
   			newConfs.clear();
-  			System.out.println("#######################################################################################################################################");
-  			System.out.println("#######################################################################################################################################");
   		}
 
+
+  		//Set end point to -1
   		for (Configuration c : confsGraph) {
   			if(c.getCode().size() == 0){
   				c.setControlPoint(-2);
   			}
-  			System.out.println(c.getBranchString() + " (" + c.getControlPoint() + ") " + c.getCode());
-  			System.out.println(c.printEvalStack());
-  			System.out.println(c.getState().printState());
-  			System.out.println("State: " + c.getState().getExceptionalState());
-  			System.out.println("hashcode: " + c.hashCode());
-  			System.out.println();
   		}
+  		
 
 
   		//ArrayList<ArrayList<Configuration>> res = new ArrayList<ArrayList<Configuration>>();
@@ -148,7 +142,7 @@ public class Main {
   		boolean noPoint = false;
   		for (Integer i : controlPointList) {
   			for(Configuration c : confsGraph){
-  				if(i == c.getControlPoint()){
+  				if(i == c.getControlPoint() && !c.getState().getExceptionalState()){
   					noPoint = true;
   				}
   			}
@@ -156,10 +150,7 @@ public class Main {
   				stmMap.get(i).unReachable = true;
   			}
   			noPoint = false;
-  		}
-
-  		// find exceptionraiser
-  	
+  		}  	
   		
   	  	//Final lub
   	  	try{
@@ -187,13 +178,13 @@ public class Main {
 	 			 sb.append(str + "=" + val1.get(str) + ",");
 	 		}
 	 		String res = sb.toString().substring(0,sb.toString().length()-1);
-	 		System.out.println("\n"+ res + "} (normal termination)");
+	 		System.out.println("\n"+ res + "}" + ANSI_GREEN + "    (normal termination)" + ANSI_RESET);
 		}catch(NullPointerException e){
 			//PrettyPrint
 	 		PrettyPrinter p = new PrettyPrinter();
 	  	  	s.accept(p);
 
-	  	  	System.out.println("\n(Infinite Loop)");
+	  	  	System.out.println(ANSI_RED+"\n(Infinite Loop)"+ ANSI_RESET);
 		}
 
 		

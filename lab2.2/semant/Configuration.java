@@ -44,13 +44,7 @@ class Configuration {
 	}
 
 	public int hashCode(){
-		/*
-		System.out.println("C hash: " + c.hashCode());
-		System.out.println("E hash: " + e.hashCode());
-		System.out.println("S hash: " + s.shashCode());
-		System.out.println("TOTAL hash: " + (c.hashCode() ^ e.hashCode() ^ s.shashCode()));
-		*/
-		return c.hashCode() ^ e.hashCode() ^ s.shashCode();
+		return c.hashCode() ^ e.hashCode() ^ s.hashCode();
 	}
 
 
