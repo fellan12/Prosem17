@@ -1,4 +1,5 @@
-# Should terminate with x = 17 and y = 19
-
-while(true) do
-	skip
+x := 1;
+try
+	x := 2
+catch
+	x := 3

@@ -179,6 +179,7 @@ public class Main {
 	 		}
 	 		String res = sb.toString().substring(0,sb.toString().length()-1);
 	 		System.out.println("\n"+ res + "}" + ANSI_GREEN + "    (normal termination)" + ANSI_RESET);
+
 		}catch(NullPointerException e){
 			//PrettyPrint
 	 		PrettyPrinter p = new PrettyPrinter();

@@ -71,8 +71,9 @@ public class PrettyPrinter implements WhileVisitor {
                 System.out.println();
             }
         }else{
-            System.out.println("   (Unreachable code)");
+            System.out.println(ANSI_RED+"   (Unreachable code)"+ANSI_RESET);
         }
+        System.out.print(i);
         assignment.x.accept(this);
         System.out.print(" := ");
         assignment.a.accept(this);
@@ -91,7 +92,7 @@ public class PrettyPrinter implements WhileVisitor {
         if (!conditional.unReachable){
             System.out.println(calcLub(confMap.get(conditional.controlPoint)));
         }else{
-            System.out.println("   (Ureachable code)");
+            System.out.println(ANSI_RED+"   (Unreachable code)"+ANSI_RESET);
         }        
         System.out.print(i + "if ");
         conditional.b.accept(this);
@@ -177,7 +178,7 @@ public class PrettyPrinter implements WhileVisitor {
     }
     
     public Code visit(Var var) {
-        System.out.print(i+var.id);
+        System.out.print(var.id);
         return null;
     }
     
@@ -186,7 +187,7 @@ public class PrettyPrinter implements WhileVisitor {
         if (!whyle.unReachable){
             System.out.println(calcLub(confMap.get(whyle.controlPoint)));
         }else{
-            System.out.println("    (Ureachable code)");
+            System.out.println(ANSI_RED+"   (Unreachable code)"+ANSI_RESET);
         }          System.out.print(i + "while ");
         whyle.b.accept(this);
         System.out.print(" do");
@@ -210,7 +211,7 @@ public class PrettyPrinter implements WhileVisitor {
         if (!trycatch.unReachable){
             System.out.println(calcLub(confMap.get(trycatch.controlPoint)));
         }else{
-            System.out.println("    (Unreachable code)");
+            System.out.println(ANSI_RED+"   (Unreachable code)"+ANSI_RESET);
         }         
         System.out.print(i + "try");
         indent();
